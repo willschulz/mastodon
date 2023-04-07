@@ -7,6 +7,12 @@ class Api::V1::Timelines::HomeController < Api::BaseController
 
   def show
     @statuses = load_statuses
+    faves = Array.new(@statuses.length)
+    for ii in 0...@statuses.length
+      faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
+    end
+    sorted_statuses = @statuses.sort_by.with_index { |_, i| -faves[i] }
+    @statuses = sorted_statuses
 
     render json: @statuses,
            each_serializer: REST::StatusSerializer,
