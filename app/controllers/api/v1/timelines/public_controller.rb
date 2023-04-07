@@ -32,19 +32,19 @@ class Api::V1::Timelines::PublicController < Api::BaseController
     #@statuses = @statuses.sort_by { |status| [-weighted_scores[status.id], -status.created_at.to_i] }
     #insert_pagination_headers #this is suggested but doesn't make sense to me
     ###
-    #faves = Array.new(@statuses.length)
+    faves = Array.new(@statuses.length)
 
-    # for ii in 0...@statuses.length
-    #   faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
-    # end
+    for ii in 0...@statuses.length
+      faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
+    end
     
-    # faves_json = faves.to_json
-    # puts <<~JS
-    #   <script>
-    #     var faves = #{faves_json};
-    #     console.log(faves);
-    #   </script>
-    # JS
+    faves_json = faves.to_json
+    puts <<~JS
+      <script>
+        var faves = #{faves_json};
+        console.log(faves);
+      </script>
+    JS
     
     sorted_statuses = @statuses.sort_by.with_index { |_, i| -faves[i] } 
     @statuses = sorted_statuses
