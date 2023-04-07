@@ -6,19 +6,37 @@ class Api::V1::Timelines::PublicController < Api::BaseController
 
   def show
     @statuses = load_statuses
-    faves = Array.new(@statuses.length)
-
-    for ii in 0...@statuses.length
-      faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
-    end
-
-    sorted_statuses = @statuses.sort_by.with_index { |_, i| -faves[i] } 
-    @statuses = sorted_statuses
-
+    
+    ###
+    weighted_scores = calculate_weighted_scores(@statuses)
+    @statuses = @statuses.sort_by { |status| [-weighted_scores[status.id], -status.created_at.to_i] }
+    #insert_pagination_headers #this is suggested but doesn't make sense to me
+    ###
+    #faves = Array.new(@statuses.length)
+    #for ii in 0...@statuses.length
+    #  faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
+    #end
+    #sorted_statuses = @statuses.sort_by.with_index { |_, i| -faves[i] } 
+    #@statuses = sorted_statuses
     render json: @statuses, each_serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
   end
 
   private
+  
+  ###
+  def calculate_weighted_scores(statuses)
+    # Calculate the weighted scores for each status
+    statuses.map do |status|
+      likes_count = status.favourites_count || 0
+      #retweets_count = status.retweets_count || 0
+      #replies_count = status.replies_count || 0
+      likes_weight = 0.5
+      retweets_weight = 0.3
+      replies_weight = 0.2
+      weighted_score = likes_count * likes_weight #+ retweets_count * retweets_weight + replies_count * replies_weight
+      [status.id, weighted_score]
+  end.to_h
+  ###
 
   def require_auth?
     !Setting.timeline_preview
