@@ -17,14 +17,6 @@ class Api::V1::Timelines::PublicController < Api::BaseController
       faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
     end
     
-    faves_json = faves.to_json
-    puts <<~JS
-      <script>
-        var faves = #{faves_json};
-        console.log(faves);
-      </script>
-    JS
-    
     statuses_with_favorites = Status.where(id: @statuses).select(:id, :favourites_count)
     #faves = statuses_with_favorites.map { |status| status.favourites_count }
     
