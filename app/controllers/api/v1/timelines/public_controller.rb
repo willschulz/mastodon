@@ -6,6 +6,21 @@ class Api::V1::Timelines::PublicController < Api::BaseController
 
   def show
     @statuses = load_statuses
+    faves = Array.new(@statuses.length)
+
+    for ii in 0...@statuses.length
+      faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
+    end
+
+    sorted_statuses = @statuses.sort_by.with_index { |_, i| faves[i] } 
+    reversed_sorted_statuses = sorted_statuses.reverse
+
+    @statuses = reversed_sorted_statuses
+      
+    # for ii in 0...@statuses.length
+    #   temp = REST::StatusSerializer.new(@statuses[ii])
+    #   @statuses[ii].text = temp.favourites_count.to_s + " " + temp.favourites_count.is_a?(Integer).to_s
+    # end
     render json: @statuses, each_serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
   end
 
@@ -25,7 +40,7 @@ class Api::V1::Timelines::PublicController < Api::BaseController
 
   def public_statuses
     public_feed.get(
-      limit_param(DEFAULT_STATUSES_LIMIT),
+      limit_param(100),
       params[:max_id],
       params[:since_id],
       params[:min_id]

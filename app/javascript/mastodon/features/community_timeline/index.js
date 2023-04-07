@@ -60,16 +60,16 @@ class CommunityTimeline extends React.PureComponent {
     } else {
       dispatch(addColumn('COMMUNITY', { other: { onlyMedia } }));
     }
-  }
+  };
 
   handleMove = (dir) => {
     const { columnId, dispatch } = this.props;
     dispatch(moveColumn(columnId, dir));
-  }
+  };
 
   handleHeaderClick = () => {
     this.column.scrollTop();
-  }
+  };
 
   componentDidMount () {
     const { dispatch, onlyMedia } = this.props;
@@ -109,13 +109,13 @@ class CommunityTimeline extends React.PureComponent {
 
   setRef = c => {
     this.column = c;
-  }
+  };
 
   handleLoadMore = maxId => {
     const { dispatch, onlyMedia } = this.props;
 
     dispatch(expandCommunityTimeline({ maxId, onlyMedia }));
-  }
+  };
 
   render () {
     const { intl, hasUnread, columnId, multiColumn, onlyMedia } = this.props;
@@ -137,7 +137,7 @@ class CommunityTimeline extends React.PureComponent {
         </ColumnHeader>
 
         <DismissableBanner id='community_timeline'>
-          <FormattedMessage id='dismissable_banner.community_timeline' defaultMessage='These are the most recent public posts from people whose accounts are hosted by {domain}.' values={{ domain }} />
+          <FormattedMessage id='dismissable_banner.community_timeline' defaultMessage='These pieces of propaganda are brought to u by the woke libs at {domain}.' values={{ domain }} />
         </DismissableBanner>
 
         <StatusListContainer
