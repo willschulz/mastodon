@@ -17,6 +17,15 @@ class Api::V1::Timelines::PublicController < Api::BaseController
       </script>
     JS
 
+    statuses_with_favorites = StatusStat.joins("LEFT OUTER JOIN statuses ON status_stats.status_id = statuses.id").where(status_id: @statuses).select("statuses.id AS status_id, COALESCE(status_stats.favourites_count, 0) AS favourites_count")
+
+    statuses_with_favorites_json = statuses_with_favorites.to_json
+    puts <<~JS
+      <script>
+        var stats = #{statuses_with_favorites_json};
+      </script>
+    JS
+
     faves = statuses_with_favorites.map { |status| status.favourites_count }
 
     faves_json = faves.to_json
