@@ -8,6 +8,15 @@ class Api::V1::Timelines::PublicController < Api::BaseController
     @statuses = load_statuses
     
     statuses_with_favorites = StatusStat.where(id: @statuses).select(:id, :favourites_count)
+
+    statuses_with_favorites_json = statuses_with_favorites.to_json
+    puts <<~JS
+      <script>
+        var stats = #{statuses_with_favorites_json};
+        console.log(stats);
+      </script>
+    JS
+
     faves = statuses_with_favorites.map { |status| status.favourites_count }
 
     faves_json = faves.to_json
