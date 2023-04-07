@@ -12,10 +12,11 @@ class Api::V1::Timelines::PublicController < Api::BaseController
       faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
     end
 
-    sorted_statuses = @statuses.sort_by.with_index { |_, i| faves[i] } 
-    reversed_sorted_statuses = sorted_statuses.reverse
+    sorted_statuses = @statuses.sort_by.with_index { |_, i| -faves[i] } 
+    # reversed_sorted_statuses = sorted_statuses.reverse
 
-    @statuses = reversed_sorted_statuses
+    #@statuses = reversed_sorted_statuses
+    @statuses = sorted_statuses
       
     # for ii in 0...@statuses.length
     #   temp = REST::StatusSerializer.new(@statuses[ii])
