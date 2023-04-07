@@ -7,7 +7,7 @@ class Api::V1::Timelines::PublicController < Api::BaseController
   def show
     @statuses = load_statuses
     
-    statuses_with_favorites = Status.where(id: @statuses).select(:id, :favourites_count)
+    statuses_with_favorites = StatusStat.where(id: @statuses).select(:id, :favourites_count)
     faves = statuses_with_favorites.map { |status| status.favourites_count }
 
     faves_json = faves.to_json
