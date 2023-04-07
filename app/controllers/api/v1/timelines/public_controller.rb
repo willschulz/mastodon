@@ -12,10 +12,14 @@ class Api::V1::Timelines::PublicController < Api::BaseController
     #@statuses = @statuses.sort_by { |status| [-weighted_scores[status.id], -status.created_at.to_i] }
     #insert_pagination_headers #this is suggested but doesn't make sense to me
     ###
-    faves = Array.new(@statuses.length)
-    for ii in 0...@statuses.length
-      faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
-    end
+    #faves = Array.new(@statuses.length)
+    #for ii in 0...@statuses.length
+    #  faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
+    #end
+    
+    statuses_with_favorites = Status.where(id: @statuses).select(:id, :favourites_count)
+    faves = statuses_with_favorites.map { |status| status.favourites_count }
+    
     sorted_statuses = @statuses.sort_by.with_index { |_, i| -faves[i] } 
     @statuses = sorted_statuses
     render json: @statuses, each_serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
