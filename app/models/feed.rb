@@ -14,7 +14,7 @@ class Feed
     since_id = since_id.to_i if since_id.present?
     min_id   = min_id.to_i if min_id.present?
 
-    from_redis(5, max_id, since_id, min_id)
+    from_redis(limit, max_id, since_id, min_id)
   end
 
   protected
