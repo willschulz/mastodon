@@ -443,6 +443,7 @@ Rails.application.routes.draw do
       namespace :timelines do
         resource :home, only: :show, controller: :home
         resource :public, only: :show, controller: :public
+        resource :public_rchron, only: :show, controller: :public_rchron
         resources :tag, only: :show
         resources :list, only: :show
       end
