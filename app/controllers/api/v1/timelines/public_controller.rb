@@ -13,15 +13,8 @@ class Api::V1::Timelines::PublicController < Api::BaseController
     end
 
     sorted_statuses = @statuses.sort_by.with_index { |_, i| -faves[i] } 
-    # reversed_sorted_statuses = sorted_statuses.reverse
-
-    #@statuses = reversed_sorted_statuses
     @statuses = sorted_statuses
-      
-    # for ii in 0...@statuses.length
-    #   temp = REST::StatusSerializer.new(@statuses[ii])
-    #   @statuses[ii].text = temp.favourites_count.to_s + " " + temp.favourites_count.is_a?(Integer).to_s
-    # end
+
     render json: @statuses, each_serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
   end
 
