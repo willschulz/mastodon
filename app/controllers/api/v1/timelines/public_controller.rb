@@ -10,7 +10,7 @@ class Api::V1::Timelines::PublicController < Api::BaseController
     ###
     weighted_scores = calculate_weighted_scores(@statuses)
     @statuses = @statuses.sort_by { |status| [-weighted_scores[status.id], -status.created_at.to_i] }
-    #insert_pagination_headers #this is suggested but doesn't make sense to me
+    insert_pagination_headers #this is suggested but doesn't make sense to me
     ###
     #faves = Array.new(@statuses.length)
     #for ii in 0...@statuses.length
