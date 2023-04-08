@@ -58,7 +58,7 @@ module Paginable
       if options[:min_id].present?
         paginate_by_min_id_fav(limit, options[:min_id], options[:max_id]).reverse
       else
-        paginate_by_max_id_fav(limit, options[:max_id], options[:since_id]).to_a
+        paginate_by_max_id_fav(limit, options[:max_id], options[:since_id]).to_a.reverse
       end
     end
   end
