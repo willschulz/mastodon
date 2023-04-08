@@ -29,15 +29,15 @@ module Paginable
       #query = joins(:status_stat).order(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(10)
       #
       #query = joins(:status_stat).where(StatusStat.arel_table[:favourites_count].in(10..21)).order(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(6)
-      # query = joins(:status_stat).reorder(arel_table[:id].desc).limit(6)
-      # query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
-      # query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-      # query = query.reorder(StatusStat.arel_table[:favourites_count].desc)
-      query = joins(:status_stat)
+      query = joins(:status_stat).reorder(arel_table[:id].desc).limit(6)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-      query = query.reorder(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(6)
-
+      #query = query.reorder(StatusStat.arel_table[:favourites_count].desc)
+      
+      # query = joins(:status_stat)
+      # query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
+      # query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
+      # query = query.reorder(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(6)
       query
     }
 
@@ -64,7 +64,7 @@ module Paginable
       if options[:min_id].present?
         paginate_by_min_id_fav(limit, options[:min_id], options[:max_id]).reverse
       else
-        paginate_by_max_id_fav(limit, options[:max_id], options[:since_id]).to_a#.order(StatusStat.arel_table[:favourites_count].desc)
+        paginate_by_max_id_fav(limit, options[:max_id], options[:since_id]).reorder(StatusStat.arel_table[:favourites_count].desc).to_a
       end
     end
   end
