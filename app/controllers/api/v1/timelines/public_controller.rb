@@ -24,7 +24,7 @@ class Api::V1::Timelines::PublicController < Api::BaseController
     # JS
     
     sorted_statuses = @statuses.sort_by.with_index { |_, i| -faves[i] } 
-    @statuses = sorted_statuses
+    #@statuses = sorted_statuses #commented out to test deepr algo version
     render json: @statuses, each_serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
   end
 
