@@ -30,9 +30,9 @@ class REST::StatusSerializer < ActiveModel::Serializer
   has_one :preview_card, key: :card, serializer: REST::PreviewCardSerializer
   has_one :preloadable_poll, key: :poll, serializer: REST::PollSerializer
 
-  def favourites_count
-    object.favourites_count
-  end
+  # def favourites_count
+  #   object.favourites_count
+  # end
 
   def id
     object.id.to_s
