@@ -28,10 +28,6 @@ class StatusStat < ApplicationRecord
   def favourites_count
     [attributes['favourites_count'], 0].max
   end
-  
-  def favourites_count_inczero
-  [attributes['favourites_count'], 0].max || 0
-  end
 
   private
 
