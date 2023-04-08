@@ -7,7 +7,7 @@ class Api::V1::Timelines::PublicController < Api::BaseController
   def show
     @statuses = load_statuses
 
-    statuses_json = @statuses.to_json
+    statuses_json = @statuses.id.to_json
     puts <<~JS
       var statuses = #{statuses_json};
     JS
