@@ -12,8 +12,8 @@ class Api::V1::Timelines::PublicController < Api::BaseController
       var statuses = #{statuses_json};
     JS
 
-    statuses_with_favorites = StatusStat.where(status_id: @statuses).pluck(:status_id, "COALESCE(favourites_count, 0)")
-    
+    statuses_with_favorites = StatusStat.where(status_id: @statuses).pluck(:status_id, "COALESCE(favourites_count, 0) AS favourites_count")
+
     statuses_with_favorites_json = statuses_with_favorites.to_json
     puts <<~JS
       <script>
