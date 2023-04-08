@@ -29,7 +29,7 @@ class PublicFeed
     scope.merge!(media_only_scope) if media_only?
     scope.merge!(language_scope) if account&.chosen_languages.present?
 
-    scope.cache_ids.to_a_paginated_by_id(limit, max_id: max_id, since_id: since_id, min_id: min_id)
+    scope.cache_ids.to_a_paginated_by_id(limit, max_id: max_id, since_id: since_id, min_id: min_id)#would need to write alternative method to paginate by rank
   end
 
   private
@@ -61,8 +61,15 @@ class PublicFeed
   end
 
   def public_scope
-    Status.with_public_visibility.joins(:account).merge(Account.without_suspended.without_silenced)
+    Status.with_public_visibility.joins(:account).merge(Account.without_suspended.without_silenced) #change this to look in StatusStats?
   end
+
+  # def public_scope
+  #   Status.with_public_visibility
+  #         .joins(:account, :status_stats)
+  #         .merge(Account.without_suspended.without_silenced)
+  #         .order("status_stats.favourites_count DESC") #depending on how cache_ids and to_a_paginated_by_id methods work, this could be useful...
+  # end
 
   def local_only_scope
     Status.local

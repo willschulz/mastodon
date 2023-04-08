@@ -28,7 +28,7 @@ class Feed
       unhydrated = redis.zrangebyscore(key, "(#{min_id}", "(#{max_id}", limit: [0, limit], with_scores: true).map(&:first).map(&:to_i)
     end
 
-    Status.where(id: unhydrated).cache_ids
+    Status.where(id: unhydrated).cache_ids #would need to change to First lookup ids of top-ranking-score statuses in the StatusStat table, and then pull those ids from Status here
   end
 
   def key
