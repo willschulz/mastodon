@@ -12,7 +12,8 @@ class Api::V1::Timelines::HomeController < Api::BaseController
     # for ii in 0...@statuses.length
     #   faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
     # end
-    @statuses = @statuses.sort_by.with_index { |_, i| -faves[i] }
+
+    #@statuses = @statuses.sort_by.with_index { |_, i| -faves[i] } #turned to rev chron for testing
 
     render json: @statuses,
            each_serializer: REST::StatusSerializer,
