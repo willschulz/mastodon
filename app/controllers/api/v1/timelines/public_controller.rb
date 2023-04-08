@@ -6,12 +6,10 @@ class Api::V1::Timelines::PublicController < Api::BaseController
 
   def show
     @statuses = load_statuses
-    
-    statuses_with_favorites = StatusStat.where(status_id: @statuses).pluck(:status_id, :favourites_count_inczero)
 
-    statuses_with_favorites_json = statuses_with_favorites.to_json
+    statuses_json = @statuses.to_json
     puts <<~JS
-        #{statuses_with_favorites_json};
+      var statuses = #{statuses_json};
     JS
 
     statuses_with_favorites = StatusStat.where(status_id: @statuses).pluck(:status_id, :favourites_count)
@@ -23,16 +21,6 @@ class Api::V1::Timelines::PublicController < Api::BaseController
         console.log(stats);
       </script>
     JS
-
-    statuses_with_favorites = StatusStat.joins("LEFT OUTER JOIN statuses ON status_stats.status_id = statuses.id").where(status_id: @statuses).select("statuses.id AS status_id, COALESCE(status_stats.favourites_count, 0) AS favourites_count")
-
-    statuses_with_favorites_json = statuses_with_favorites.to_json
-    puts <<~JS
-      <script>
-        var stats = #{statuses_with_favorites_json};
-      </script>
-    JS
-
 
     statuses_with_favorites = StatusStat.where(status_id: @statuses).select(:status_id, "COALESCE(favourites_count, 0) AS favourites_count")
 
