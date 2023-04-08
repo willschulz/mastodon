@@ -62,8 +62,12 @@ class PublicFeed
     options[:only_media]
   end
 
+  # def public_scope
+  #   Status.with_public_visibility.joins(:account).merge(Account.without_suspended.without_silenced) #change this to look in StatusStats?
+  # end
+
   def public_scope
-    Status.with_public_visibility.joins(:account).merge(Account.without_suspended.without_silenced) #change this to look in StatusStats?
+    Status.with_public_visibility.joins(:account, :status_stats).merge(Account.without_suspended.without_silenced) #change this to look in StatusStats?
   end
 
   # def public_scope
