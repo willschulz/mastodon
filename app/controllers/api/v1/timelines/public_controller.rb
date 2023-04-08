@@ -7,52 +7,52 @@ class Api::V1::Timelines::PublicController < Api::BaseController
   def show
     @statuses = load_statuses
 
-    status_ids = @statuses.map { |status| status.favourites_count }
+    faves = @statuses.map { |status| status.favourites_count }
 
     status_ids_json = status_ids.to_json
     puts <<~JS
       var statuses = #{status_ids_json};
     JS
 
-    # statuses_with_favorites = StatusStat.where(status_id: @statuses).pluck(:status_id, "COALESCE(favourites_count, 0) AS favourites_count")
+    # # statuses_with_favorites = StatusStat.where(status_id: @statuses).pluck(:status_id, "COALESCE(favourites_count, 0) AS favourites_count")
+
+    # # statuses_with_favorites_json = statuses_with_favorites.to_json
+    # # puts <<~JS
+    # #   <script>
+    # #     var stats = #{statuses_with_favorites_json};
+    # #     console.log(stats);
+    # #   </script>
+    # # JS
+
+    # statuses_with_favorites = StatusStat.where(status_id: @statuses).select(:status_id, "COALESCE(favourites_count, 0) AS favourites_count")
 
     # statuses_with_favorites_json = statuses_with_favorites.to_json
     # puts <<~JS
     #   <script>
     #     var stats = #{statuses_with_favorites_json};
-    #     console.log(stats);
     #   </script>
     # JS
 
-    statuses_with_favorites = StatusStat.where(status_id: @statuses).select(:status_id, "COALESCE(favourites_count, 0) AS favourites_count")
+    # faves = statuses_with_favorites.map { |status| status.favourites_count }
 
-    statuses_with_favorites_json = statuses_with_favorites.to_json
-    puts <<~JS
-      <script>
-        var stats = #{statuses_with_favorites_json};
-      </script>
-    JS
+    # faves_json = faves.to_json
+    # puts <<~JS
+    #   <script>
+    #     var faves = #{faves_json};
+    #     console.log(faves);
+    #   </script>
+    # JS
 
-    faves = statuses_with_favorites.map { |status| status.favourites_count }
+    # ###
+    # #weighted_scores = calculate_weighted_scores(@statuses)
+    # #@statuses = @statuses.sort_by { |status| [-weighted_scores[status.id], -status.created_at.to_i] }
+    # #insert_pagination_headers #this is suggested but doesn't make sense to me
+    # ###
+    # faves = Array.new(@statuses.length)
 
-    faves_json = faves.to_json
-    puts <<~JS
-      <script>
-        var faves = #{faves_json};
-        console.log(faves);
-      </script>
-    JS
-
-    ###
-    #weighted_scores = calculate_weighted_scores(@statuses)
-    #@statuses = @statuses.sort_by { |status| [-weighted_scores[status.id], -status.created_at.to_i] }
-    #insert_pagination_headers #this is suggested but doesn't make sense to me
-    ###
-    faves = Array.new(@statuses.length)
-
-    for ii in 0...@statuses.length
-      faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
-    end
+    # for ii in 0...@statuses.length
+    #   faves[ii] = REST::StatusSerializer.new(@statuses[ii]).favourites_count
+    # end
     
     faves_json = faves.to_json
     puts <<~JS
