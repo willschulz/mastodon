@@ -36,7 +36,11 @@ module Paginable
     }
 
     scope :paginate_by_min_id_fav, ->(limit, min_id = nil, max_id = nil) {
-      query = reorder(arel_table[:id]).limit(limit)
+      # query = reorder(arel_table[:id]).limit(limit)
+      # query = query.where(arel_table[:id].gt(min_id)) if min_id.present?
+      # query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
+      # query
+      query = joins(:status_stat).order(StatusStat.arel_table[:favourites_count], arel_table[:id]).limit(limit)
       query = query.where(arel_table[:id].gt(min_id)) if min_id.present?
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query
