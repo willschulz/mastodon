@@ -67,7 +67,7 @@ class PublicFeed
   # end
 
   def public_scope
-    Status.with_public_visibility.joins(:account, :status_stats).merge(Account.without_suspended.without_silenced) #change this to look in StatusStats?
+    Status.with_public_visibility.joins(:account, :status_stats).merge(Account.without_suspended.without_silenced).select("statuses.*, status_stats.favourites_count")
   end
 
   # def public_scope
