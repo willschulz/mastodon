@@ -23,19 +23,20 @@ module Paginable
       query
     }
 
-    # scope :paginate_by_max_id_weighted, ->(limit, max_id = nil, since_id = nil) {
-    #   query = order(arel_table[:id_weighted].desc).limit(limit)
-    #   query = query.where(arel_table[:id_weighted].lt(max_id)) if max_id.present?
-    #   query = query.where(arel_table[:id_weighted].gt(since_id)) if since_id.present?
-    #   query
-    # }
+    #my attempt:
+    scope :paginate_by_max_id_fav ->(limit, max_id = nil, since_id = nil) {
+      query = order(arel_table[:id].desc).limit(limit)
+      query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
+      query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
+      query
+    }
 
-    # scope :paginate_by_min_id_weighted, ->(limit, min_id = nil, max_id = nil) {
-    #   query = reorder(arel_table[:id_weighted]).limit(limit) #can I reorder by weighted_id instead and get the desired result?
-    #   query = query.where(arel_table[:id_weighted].gt(min_id)) if min_id.present?
-    #   query = query.where(arel_table[:id_weighted].lt(max_id)) if max_id.present?
-    #   query
-    # }
+    scope :paginate_by_min_id_fav, ->(limit, min_id = nil, max_id = nil) {
+      query = reorder(arel_table[:id]).limit(limit) #can I reorder by weighted_id instead and get the desired result?
+      query = query.where(arel_table[:id].gt(min_id)) if min_id.present?
+      query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
+      query
+    }
 
     def self.to_a_paginated_by_id(limit, options = {})
       if options[:min_id].present?
@@ -45,12 +46,12 @@ module Paginable
       end
     end
 
-    # def self.to_a_paginated_by_id_weighted(limit, options = {})
-    #   if options[:min_id].present?
-    #     paginate_by_min_id_weighted(limit, options[:min_id], options[:max_id]).reverse
-    #   else
-    #     paginate_by_max_id_weighted(limit, options[:max_id], options[:since_id]).to_a
-    #   end
-    # end
+    def self.to_a_paginated_by_id_fav(limit, options = {})
+      if options[:min_id].present?
+        paginate_by_min_id_fav(limit, options[:min_id], options[:max_id]).reverse
+      else
+        paginate_by_max_id_fav(limit, options[:max_id], options[:since_id]).to_a
+      end
+    end
   end
 end
