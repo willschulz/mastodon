@@ -25,14 +25,16 @@ module Paginable
 
     #my attempt:
     scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
-      query = order(arel_table[:id].desc).limit(limit)
+      #query = order(arel_table[:id].desc).limit(limit)
+      query = order(arel_table[:favourites_count].desc).limit(limit)
+      query = query.order(arel_table[:id].desc)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
       query
     }
 
     scope :paginate_by_min_id_fav, ->(limit, min_id = nil, max_id = nil) {
-      query = reorder(arel_table[:id]).limit(limit) #can I reorder by weighted_id instead and get the desired result?
+      query = reorder(arel_table[:id]).limit(limit)
       query = query.where(arel_table[:id].gt(min_id)) if min_id.present?
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query
