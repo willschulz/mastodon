@@ -7,6 +7,13 @@ class Api::V1::Timelines::PublicController < Api::BaseController
   def show
     @statuses = load_statuses
     
+    statuses_with_favorites = StatusStat.where(status_id: @statuses).pluck(:status_id, :favourites_count_inczero)
+
+    statuses_with_favorites_json = statuses_with_favorites.to_json
+    puts <<~JS
+        #{statuses_with_favorites_json};
+    JS
+
     statuses_with_favorites = StatusStat.where(status_id: @statuses).pluck(:status_id, :favourites_count)
 
     statuses_with_favorites_json = statuses_with_favorites.to_json
