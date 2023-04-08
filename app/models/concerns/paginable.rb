@@ -25,18 +25,19 @@ module Paginable
 
     #my attempt:
     scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
-      # query = order(arel_table[:id].desc).limit(limit)
-      # query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
-      # query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-      # query
       #query = joins(:status_stat).where(StatusStat.arel_table[:favourites_count].eq(2)).order(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(3)#this is where we go back #remember to add back  after [:id]
       #query = joins(:status_stat).order(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(10)
       #
       #query = joins(:status_stat).where(StatusStat.arel_table[:favourites_count].in(10..21)).order(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(6)
-      query = joins(:status_stat).reorder(arel_table[:id].desc).limit(6)
+      # query = joins(:status_stat).reorder(arel_table[:id].desc).limit(6)
+      # query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
+      # query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
+      # query = query.reorder(StatusStat.arel_table[:favourites_count].desc)
+      query = joins(:status_stat)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-      query = query.reorder(StatusStat.arel_table[:favourites_count].desc)
+      uery = query.reorder(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(6)
+
       query
     }
 
