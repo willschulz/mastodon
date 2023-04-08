@@ -9,10 +9,10 @@ class Api::V1::Timelines::PublicController < Api::BaseController
 
     faves = @statuses.map { |status| status.favourites_count }
 
-    status_ids_json = status_ids.to_json
-    puts <<~JS
-      var statuses = #{status_ids_json};
-    JS
+    # status_ids_json = status_ids.to_json
+    # puts <<~JS
+    #   var statuses = #{status_ids_json};
+    # JS
 
     # # statuses_with_favorites = StatusStat.where(status_id: @statuses).pluck(:status_id, "COALESCE(favourites_count, 0) AS favourites_count")
 
