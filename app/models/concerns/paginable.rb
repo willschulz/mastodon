@@ -47,15 +47,15 @@ module Paginable
       #query = joins(:status_stat).where(StatusStat.arel_table[:favourites_count].in(0..9)).order(arel_table[:id].desc)
 
       query = joins(:status_stat)
-            .where(StatusStat.arel_table[:favourites_count].in(0..9))
-            .order(Arel::Nodes::NamedFunction.new('concat', [StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
+            .where(StatusStat.arel_table[:favourites_count].in(10..50))
+            .order(Arel::Nodes::NamedFunction.new('concat', [StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc).limit(5)
 
 
       #query = joins(:status_stat).where(StatusStat.arel_table[:favourites_count].in(0..9))
       #.order(arel_table[:id].desc).limit(6).reorder(StatusStat.arel_table[:favourites_count].desc)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-      query = query.limit(6)
+      query = query
       query
     }
 
