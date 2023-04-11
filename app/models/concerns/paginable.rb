@@ -92,7 +92,7 @@ module Paginable
     # }
 
     scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
-      epoch_subquery = Arel::Nodes::NamedFunction.new('extract', [Arel::Nodes.build_quoted('epoch'), arel_table[:created_at]])
+      epoch_subquery = Arel::Nodes::NamedFunction.new('extract', [Arel::Nodes.build_quoted("epoch"), arel_table[:created_at]])
       epoch_value = Arel::Nodes::NamedFunction.new('cast', [epoch_subquery, Arel::Nodes::SqlLiteral.new('integer')])
       puts "Epoch value: #{epoch_value}"
       query = joins(:status_stat).reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1) + epoch_value).desc).limit(20)
