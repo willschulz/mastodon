@@ -57,8 +57,10 @@ module Paginable
 
       # print bitshift:
       bit_shifted = Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)
-      puts "Bitshifted value: #{bit_shifted}"
-
+      shifted_sql = bit_shifted.to_sql
+      shifted_value = ActiveRecord::Base.connection.execute("SELECT #{shifted_sql}").first.values.first
+      puts "Bitshifted value: #{shifted_value}"
+      
       query = joins(:status_stat)
               #.where(StatusStat.arel_table[:favourites_count].in(10..70))
               #.reorder(Arel::Nodes::NamedFunction.new('concat', [StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
