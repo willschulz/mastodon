@@ -54,6 +54,11 @@ module Paginable
       #query = joins(:status_stat).where(StatusStat.arel_table[:favourites_count].in(0..9))
       #.order(arel_table[:id].desc).limit(6).reorder(StatusStat.arel_table[:favourites_count].desc)      
 
+
+      # print bitshift:
+      bit_shifted = Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)
+      puts "Bitshifted value: #{bit_shifted}"
+
       query = joins(:status_stat)
               #.where(StatusStat.arel_table[:favourites_count].in(10..70))
               #.reorder(Arel::Nodes::NamedFunction.new('concat', [StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
@@ -62,9 +67,6 @@ module Paginable
               #.reorder(StatusStat.arel_table[:favourites_count].desc + arel_table[:id].desc)
               #.reorder((StatusStat.arel_table[:favourites_count] + arel_table[:id]).desc) #progress!
               .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1000000000000) + arel_table[:id]).desc) #successfully mixed time and fav count!! next step: parse id to milliseconds and devise specific algorithms
-              # print bitshift:
-              bit_shifted = Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)
-              puts "Bitshifted value: #{bit_shifted}"
               #stuff tried in the morning:
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 100000000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)).desc) #good but bitshift not working as intended
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::Grouping.new(arel_table[:id].as('integer') >> 16)).desc)
