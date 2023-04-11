@@ -24,7 +24,7 @@ module Paginable
     }
 
     #my attempt:
-    # scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
+    scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
       #query = joins(:status_stat).where(StatusStat.arel_table[:favourites_count].eq(2)).order(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(3)#this is where we go back #remember to add back  after [:id]
       #query = joins(:status_stat).order(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(10)
       #
@@ -54,33 +54,33 @@ module Paginable
       #query = joins(:status_stat).where(StatusStat.arel_table[:favourites_count].in(0..9))
       #.order(arel_table[:id].desc).limit(6).reorder(StatusStat.arel_table[:favourites_count].desc)      
 
-    #   query = joins(:status_stat)
-    #           #.where(StatusStat.arel_table[:favourites_count].in(10..70))
-    #           #.reorder(Arel::Nodes::NamedFunction.new('concat', [StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
-    #           #.reorder(Arel::Nodes::NamedFunction.new('sum', [StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
-    #           #.reorder(Arel::Nodes::Addition.new([StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
-    #           #.reorder(StatusStat.arel_table[:favourites_count].desc + arel_table[:id].desc)
-    #           #.reorder((StatusStat.arel_table[:favourites_count] + arel_table[:id]).desc) #progress!
-    #           #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1000000000000) + arel_table[:id]).desc) #successfully mixed time and fav count!! next step: parse id to milliseconds and devise specific algorithms
-    #           #stuff tried in the morning:
-    #           #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 100000000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)).desc) #good but bitshift not working as intended
-    #           #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::Grouping.new(arel_table[:id].as('integer') >> 16)).desc)
-    #           #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id].as('integer'),16)).desc)
-    #           #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at]).desc) #can't add bigint to timecode
-    #           .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1) +
-    #               Arel::Nodes::NamedFunction.new('extract', [Arel::Nodes.build_quoted('epoch'), arel_table[:created_at]]).to_sql.to_i).desc) #
-    #           #
-    #           #
-    #           #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at].cast('BIGINT')).desc) #.cast isn't a thing
-    #           #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes::Quoted.new('BIGINT'))])).desc)
-    #           #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes.build_quoted('BIGINT'))])).desc)
-    #           #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes.build_quoted('BIGINT'))])).desc)
-    #           .limit(20)
-    #   query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
-    #   query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-    #   query = query
-    #   query
-    # }
+      query = joins(:status_stat)
+              #.where(StatusStat.arel_table[:favourites_count].in(10..70))
+              #.reorder(Arel::Nodes::NamedFunction.new('concat', [StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
+              #.reorder(Arel::Nodes::NamedFunction.new('sum', [StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
+              #.reorder(Arel::Nodes::Addition.new([StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
+              #.reorder(StatusStat.arel_table[:favourites_count].desc + arel_table[:id].desc)
+              #.reorder((StatusStat.arel_table[:favourites_count] + arel_table[:id]).desc) #progress!
+              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1000000000000) + arel_table[:id]).desc) #successfully mixed time and fav count!! next step: parse id to milliseconds and devise specific algorithms
+              #stuff tried in the morning:
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 100000000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)).desc) #good but bitshift not working as intended
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::Grouping.new(arel_table[:id].as('integer') >> 16)).desc)
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id].as('integer'),16)).desc)
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at]).desc) #can't add bigint to timecode
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1) +
+              #    Arel::Nodes::NamedFunction.new('extract', [Arel::Nodes.build_quoted('epoch'), arel_table[:created_at]]).to_sql.to_i).desc) #
+              #
+              #
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at].cast('BIGINT')).desc) #.cast isn't a thing
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes::Quoted.new('BIGINT'))])).desc)
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes.build_quoted('BIGINT'))])).desc)
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes.build_quoted('BIGINT'))])).desc)
+              .limit(20)
+      query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
+      query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
+      query = query
+      query
+    }
 
     # scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
     #   query = joins(:status_stat).reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1) +
@@ -90,17 +90,6 @@ module Paginable
     #   query = query
     #   query
     # }
-
-    scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
-      epoch_subquery = Arel::Nodes::NamedFunction.new('extract', [Arel::Nodes.build_quoted("epoch"), arel_table[:created_at]])
-      epoch_value = Arel::Nodes::NamedFunction.new('cast', [epoch_subquery, Arel::Nodes::SqlLiteral.new('integer')])
-      puts "Epoch value: #{epoch_value}"
-      query = joins(:status_stat).reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1) + epoch_value).desc).limit(20)
-      query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
-      query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-      query = query
-      query
-    }
 
     # scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
     #   epoch_value = Arel::Nodes::NamedFunction.new('extract', [Arel::Nodes.build_quoted('epoch'), arel_table[:created_at]]).to_sql.to_i
