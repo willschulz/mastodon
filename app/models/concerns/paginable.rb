@@ -67,7 +67,7 @@ module Paginable
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::Grouping.new(arel_table[:id].as('integer') >> 16)).desc)
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id].as('integer'),16)).desc)
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at]).desc) #can't add bigint to timecode
-              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], .1) +
+              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 0.1) +
                   Arel::Nodes::NamedFunction.new('extract', [Arel::Nodes.build_quoted('epoch'), arel_table[:created_at]]).to_sql.to_i).desc) #
               #
               #
