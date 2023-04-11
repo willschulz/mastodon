@@ -61,14 +61,15 @@ module Paginable
               #.reorder(Arel::Nodes::Addition.new([StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
               #.reorder(StatusStat.arel_table[:favourites_count].desc + arel_table[:id].desc)
               #.reorder((StatusStat.arel_table[:favourites_count] + arel_table[:id]).desc) #progress!
-              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1000000000000) + arel_table[:id]).desc) #successfully mixed time and fav count!! next step: parse id to milliseconds and devise specific algorithms
+              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1000000000000) + arel_table[:id]).desc) #successfully mixed time and fav count!! next step: parse id to milliseconds and devise specific algorithms
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 100000000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)).desc) #good but bitshift not working as intended
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::Grouping.new(arel_table[:id].as('integer') >> 16)).desc)
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id].as('integer'),16)).desc)
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at]).desc) #can't add bigint to timecode
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at].cast('BIGINT')).desc) #.cast isn't a thing
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes::Quoted.new('BIGINT'))])).desc)
-              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes.build_quoted('BIGINT'))])).desc)
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes.build_quoted('BIGINT'))])).desc)
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes.build_quoted('BIGINT'))])).desc)
               .limit(20)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
