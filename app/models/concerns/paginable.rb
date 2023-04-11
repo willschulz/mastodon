@@ -91,13 +91,21 @@ module Paginable
     #   query
     # }
 
+    # scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
+    #   epoch_value = Arel::Nodes::NamedFunction.new('extract', [Arel::Nodes.build_quoted('epoch'), arel_table[:created_at]]).to_sql.to_i
+    #   puts "Epoch value: #{epoch_value}"
+    #   query = joins(:status_stat).reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1) + epoch_value).desc).limit(20)
+    #   query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
+    #   query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
+    #   query = query
+    #   query
+    # }
+
     scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
-      epoch_value = Arel::Nodes::NamedFunction.new('extract', [Arel::Nodes.build_quoted('epoch'), arel_table[:created_at]]).to_sql.to_i
-      puts "Epoch value: #{epoch_value}"
-      query = joins(:status_stat).reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1) + epoch_value).desc).limit(20)
+      epoch_subquery = Arel::Nodes::NamedFunction.new('extract', [Arel::Nodes.build_quoted('epoch'), arel_table[:created_at]])
+      query = joins(:status_stat).select("*", epoch_subquery.as("epoch_value")).reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1) + Arel.sql("epoch_value")).desc).limit(20)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-      query = query
       query
     }
 
