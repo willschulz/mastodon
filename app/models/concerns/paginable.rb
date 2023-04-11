@@ -24,7 +24,7 @@ module Paginable
     }
 
     #my attempt:
-    scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
+    # scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
       #query = joins(:status_stat).where(StatusStat.arel_table[:favourites_count].eq(2)).order(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(3)#this is where we go back #remember to add back  after [:id]
       #query = joins(:status_stat).order(StatusStat.arel_table[:favourites_count].desc, arel_table[:id].desc).limit(10)
       #
