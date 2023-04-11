@@ -65,8 +65,9 @@ module Paginable
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 100000000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)).desc) #good but bitshift not working as intended
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::Grouping.new(arel_table[:id].as('integer') >> 16)).desc)
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id].as('integer'),16)).desc)
-              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at]).desc)
-              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at].cast('BIGINT')).desc)
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at]).desc) #can't add bigint to timecode
+              #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at].cast('BIGINT')).desc) #.cast isn't a thing
+              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::NamedFunction.new('CAST', [arel_table[:created_at].as(Arel::Nodes::Quoted.new('BIGINT'))])).desc)
               .limit(20)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
