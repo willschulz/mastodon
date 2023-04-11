@@ -62,7 +62,7 @@ module Paginable
               #.reorder(StatusStat.arel_table[:favourites_count].desc + arel_table[:id].desc)
               #.reorder((StatusStat.arel_table[:favourites_count] + arel_table[:id]).desc) #progress!
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1000000000000) + arel_table[:id]).desc) #successfully mixed time and fav count!! next step: parse id to milliseconds and devise specific algorithms
-              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)).desc)
+              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 100000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)).desc)
               .limit(20)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
