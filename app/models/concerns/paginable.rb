@@ -61,7 +61,7 @@ module Paginable
               #.reorder(Arel::Nodes::Addition.new([StatusStat.arel_table[:favourites_count], arel_table[:id]]).desc)
               #.reorder(StatusStat.arel_table[:favourites_count].desc + arel_table[:id].desc)
               #.reorder((StatusStat.arel_table[:favourites_count] + arel_table[:id]).desc) #progress!
-              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1000000) + arel_table[:id]).desc)
+              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1000000000) + arel_table[:id]).desc)
               .limit(20)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
