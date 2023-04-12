@@ -63,7 +63,7 @@ module Paginable
               #.reorder((StatusStat.arel_table[:favourites_count] + arel_table[:id]).desc) #progress!
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1000000000000) + arel_table[:id]).desc) #successfully mixed time and fav count!! next step: parse id to milliseconds and devise specific algorithms
               #stuff tried in the morning:
-              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 100000000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)).desc) #good but bitshift not working as intended
+              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 1000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],16)).desc) #good but bitshift not working as intended
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::Grouping.new(arel_table[:id].as('integer') >> 16)).desc)
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id].as('integer'),16)).desc)
               #.reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 10000000) + arel_table[:created_at]).desc) #can't add bigint to timecode
