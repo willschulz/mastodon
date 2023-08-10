@@ -7,6 +7,7 @@ class NotificationMailer < ApplicationMailer
   helper RoutingHelper
 
   def mention(recipient, notification)
+    return
     @me     = recipient
     @status = notification.target_status
 
@@ -19,6 +20,7 @@ class NotificationMailer < ApplicationMailer
   end
 
   def follow(recipient, notification)
+    return
     @me      = recipient
     @account = notification.from_account
 
@@ -31,6 +33,7 @@ class NotificationMailer < ApplicationMailer
   end
 
   def favourite(recipient, notification)
+    return
     @me      = recipient
     @account = notification.from_account
     @status  = notification.target_status
@@ -44,6 +47,7 @@ class NotificationMailer < ApplicationMailer
   end
 
   def reblog(recipient, notification)
+    return
     @me      = recipient
     @account = notification.from_account
     @status  = notification.target_status
@@ -57,6 +61,7 @@ class NotificationMailer < ApplicationMailer
   end
 
   def follow_request(recipient, notification)
+    return
     @me      = recipient
     @account = notification.from_account
 
@@ -70,6 +75,7 @@ class NotificationMailer < ApplicationMailer
   private
 
   def thread_by_conversation(conversation)
+    return
     return if conversation.nil?
 
     msg_id = "<conversation-#{conversation.id}.#{conversation.created_at.strftime('%Y-%m-%d')}@#{Rails.configuration.x.local_domain}>"
