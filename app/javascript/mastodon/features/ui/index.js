@@ -389,7 +389,7 @@ class UI extends React.PureComponent {
 
     // On first launch, redirect to the follow recommendations page
     if (signedIn && this.props.firstLaunch) {
-      this.context.router.history.replace('/start');
+      this.context.router.history.replace('/home');
       this.props.dispatch(closeOnboarding());
     }
 
