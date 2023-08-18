@@ -704,9 +704,9 @@ en_GB:
         other: "%{count} new notifications since your last visit 🐘"
       title: In your absence...
     favourite:
-      body: 'Your status was favourited by %{name}:'
-      subject: "%{name} favourited your status"
-      title: New favourite
+      body: 'Your status was liked by %{name}:'
+      subject: "%{name} liked your status"
+      title: New like
     follow:
       body: "%{name} is now following you!"
       subject: "%{name} is now following you"
@@ -773,8 +773,8 @@ en_GB:
     reason_html: "<strong>Why is this step necessary?</strong> <code>%{instance}</code> might not be the server where you are registered, so we need to redirect you to your home server first."
   remote_interaction:
     favourite:
-      proceed: Proceed to favourite
-      prompt: 'You want to favourite this toot:'
+      proceed: Proceed to like
+      prompt: 'You want to like this toot:'
     reblog:
       proceed: Proceed to boost
       prompt: 'You want to boost this toot:'
@@ -947,7 +947,7 @@ en_GB:
 
       <p>Your public content may be downloaded by other servers in the network. Your public and followers-only posts are delivered to the servers where your followers reside, and direct messages are delivered to the servers of the recipients, in so far as those followers or recipients reside on a different server than this.</p>
 
-      <p>When you authorize an application to use your account, depending on the scope of permissions you approve, it may access your public profile information, your following list, your followers, your lists, all your posts, and your favourites. Applications can never access your e-mail address or password.</p>
+      <p>When you authorize an application to use your account, depending on the scope of permissions you approve, it may access your public profile information, your following list, your followers, your lists, all your posts, and your likes. Applications can never access your e-mail address or password.</p>
 
       <hr class="spacer" />
 
