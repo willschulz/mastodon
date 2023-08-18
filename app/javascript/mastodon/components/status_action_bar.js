@@ -69,7 +69,7 @@ class StatusActionBar extends ImmutablePureComponent {
     onFavourite: PropTypes.func,
     onReblog: PropTypes.func,
     onDelete: PropTypes.func,
-    onDirect: PropTypes.func,
+    //onDirect: PropTypes.func,
     onMention: PropTypes.func,
     onMute: PropTypes.func,
     onUnmute: PropTypes.func,
@@ -162,9 +162,9 @@ class StatusActionBar extends ImmutablePureComponent {
     this.props.onMention(this.props.status.get('account'), this.context.router.history);
   }
 
-  handleDirectClick = () => {
-    this.props.onDirect(this.props.status.get('account'), this.context.router.history);
-  }
+  //handleDirectClick = () => {
+  //  this.props.onDirect(this.props.status.get('account'), this.context.router.history);
+  //}
 
   handleMuteClick = () => {
     const { status, relationship, onMute, onUnmute } = this.props;
@@ -277,7 +277,7 @@ class StatusActionBar extends ImmutablePureComponent {
       menu.push({ text: intl.formatMessage(messages.redraft), action: this.handleRedraftClick });
     } else {
       menu.push({ text: intl.formatMessage(messages.mention, { name: account.get('username') }), action: this.handleMentionClick });
-      menu.push({ text: intl.formatMessage(messages.direct, { name: account.get('username') }), action: this.handleDirectClick });
+      //menu.push({ text: intl.formatMessage(messages.direct, { name: account.get('username') }), action: this.handleDirectClick });
       menu.push(null);
 
       if (relationship && relationship.get('muting')) {
