@@ -64,7 +64,7 @@ class ActionBar extends React.PureComponent {
     onBookmark: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
-    onDirect: PropTypes.func.isRequired,
+    //onDirect: PropTypes.func.isRequired,
     onMention: PropTypes.func.isRequired,
     onMute: PropTypes.func,
     onUnmute: PropTypes.func,
@@ -107,9 +107,9 @@ class ActionBar extends React.PureComponent {
     this.props.onEdit(this.props.status, this.context.router.history);
   }
 
-  handleDirectClick = () => {
-    this.props.onDirect(this.props.status.get('account'), this.context.router.history);
-  }
+  //handleDirectClick = () => {
+  //  this.props.onDirect(this.props.status.get('account'), this.context.router.history);
+  //}
 
   handleMentionClick = () => {
     this.props.onMention(this.props.status.get('account'), this.context.router.history);
