@@ -19,7 +19,7 @@ const messages = defineMessages({
   //local: { id: 'tabs_bar.local_timeline', defaultMessage: 'Local' },
   //federated: { id: 'tabs_bar.federated_timeline', defaultMessage: 'Federated' },
   //direct: { id: 'navigation_bar.direct', defaultMessage: 'Direct messages' },
-  favourites: { id: 'navigation_bar.favourites', defaultMessage: 'Favourites' },
+  favourites: { id: 'navigation_bar.favourites', defaultMessage: 'Likes' },
   //bookmarks: { id: 'navigation_bar.bookmarks', defaultMessage: 'Bookmarks' },
   //lists: { id: 'navigation_bar.lists', defaultMessage: 'Lists' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
@@ -68,7 +68,7 @@ class NavigationPanel extends React.Component {
 
         {signedIn && (
           <React.Fragment>
-            <ColumnLink transparent to='/favourites' icon='star' text={intl.formatMessage(messages.favourites)} />
+            <ColumnLink transparent to='/favourites' icon='heart' text={intl.formatMessage(messages.favourites)} />
 
             <ListPanel />
 
