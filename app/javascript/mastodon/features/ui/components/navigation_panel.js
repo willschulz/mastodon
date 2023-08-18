@@ -15,7 +15,7 @@ import NavigationPortal from 'mastodon/components/navigation_portal';
 const messages = defineMessages({
   home: { id: 'tabs_bar.home', defaultMessage: 'Home' },
   notifications: { id: 'tabs_bar.notifications', defaultMessage: 'Notifications' },
-  explore: { id: 'explore.title', defaultMessage: 'Explore' },
+  //explore: { id: 'explore.title', defaultMessage: 'Explore' },
   local: { id: 'tabs_bar.local_timeline', defaultMessage: 'Local' },
   federated: { id: 'tabs_bar.federated_timeline', defaultMessage: 'Federated' },
   direct: { id: 'navigation_bar.direct', defaultMessage: 'Direct messages' },
