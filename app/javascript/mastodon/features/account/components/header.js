@@ -86,7 +86,7 @@ class Header extends ImmutablePureComponent {
     onFollow: PropTypes.func.isRequired,
     onBlock: PropTypes.func.isRequired,
     onMention: PropTypes.func.isRequired,
-    onDirect: PropTypes.func.isRequired,
+    //onDirect: PropTypes.func.isRequired,
     onReblogToggle: PropTypes.func.isRequired,
     onNotifyToggle: PropTypes.func.isRequired,
     onReport: PropTypes.func.isRequired,
@@ -207,7 +207,7 @@ class Header extends ImmutablePureComponent {
 
     if (signedIn && account.get('id') !== me) {
       menu.push({ text: intl.formatMessage(messages.mention, { name: account.get('username') }), action: this.props.onMention });
-      menu.push({ text: intl.formatMessage(messages.direct, { name: account.get('username') }), action: this.props.onDirect });
+      //menu.push({ text: intl.formatMessage(messages.direct, { name: account.get('username') }), action: this.props.onDirect });
       menu.push(null);
     }
 
