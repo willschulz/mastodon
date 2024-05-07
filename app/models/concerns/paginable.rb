@@ -82,5 +82,13 @@ module Paginable
         ordered_by_fav_adjusted_recency(limit, options[:max_id], options[:since_id]).to_a
       end
     end
+
+    def self.testing_recency(limit, options = {})
+      if options[:min_id].present?
+        paginate_by_min_id(limit, options[:min_id], options[:max_id]).reverse
+      else
+        paginate_by_created_at(limit, options[:max_id], options[:since_id]).to_a
+      end
+    end
   end
 end
