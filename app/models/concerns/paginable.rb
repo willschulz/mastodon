@@ -21,7 +21,7 @@ module Paginable
       query
     }
 
-    #my attempt:
+    #my first attempt:
     scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
       query = joins(:status_stat)
               .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 100000000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],22)).desc) #good but bitshift not working as intended
@@ -29,13 +29,6 @@ module Paginable
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
       query = query
-      query
-    }
-
-    scope :paginate_by_min_id_fav, ->(limit, min_id = nil, max_id = nil) {
-      query = joins(:status_stat).order(StatusStat.arel_table[:favourites_count], arel_table[:id]).limit(2)
-      query = query.where(arel_table[:id].gt(min_id)) if min_id.present?
-      query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query
     }
 
@@ -69,7 +62,7 @@ module Paginable
     
     def self.to_a_paginated_by_id_fav(limit, options = {})
       if options[:min_id].present?
-        paginate_by_min_id_fav(limit, options[:min_id], options[:max_id]).reverse
+        paginate_by_min_id(limit, options[:min_id], options[:max_id]).reverse
       else
         paginate_by_max_id_fav(limit, options[:max_id], options[:since_id]).to_a
       end
