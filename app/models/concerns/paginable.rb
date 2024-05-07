@@ -44,9 +44,11 @@ module Paginable
       query
     }
 
-    #testing basic chrono from created_at
+    #testing recency + some function of fav.count
     scope :paginate_by_created_at, ->(limit, max_id = nil, since_id = nil) {
-      query = reorder(arel_table[:created_at]).limit(limit)
+      recency_with_favourites = Arel.sql("EXTRACT(EPOCH FROM now() - created_at) - (status_stats.favourites_count * 3600)")
+      query = joins(:status_stat)
+      query = query.reorder(recency_with_favourites).limit(limit)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
       query
