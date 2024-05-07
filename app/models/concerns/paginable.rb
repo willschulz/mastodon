@@ -39,6 +39,17 @@ module Paginable
       query
     }
 
+    scope :ordered_by_fav_adjusted_recency, -> {
+      age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
+        Arel.sql('EPOCH FROM NOW() - created_at')
+      ])
+      fav_adjustment = StatusStat.arel_table[:favourites_count].mul(3600)
+      weighted_age = Arel::Nodes::Subtraction.new(age_in_seconds, fav_adjustment)
+
+      query = joins(:status_stat).order(weighted_age.asc)
+      query
+    }
+
     def self.to_a_paginated_by_id(limit, options = {})#still need this? how to paginate this way for rchron and my new way by timeline interface?
       if options[:min_id].present?
         paginate_by_min_id(limit, options[:min_id], options[:max_id]).reverse
@@ -52,6 +63,14 @@ module Paginable
         paginate_by_min_id_fav(limit, options[:min_id], options[:max_id]).reverse
       else
         paginate_by_max_id_fav(limit, options[:max_id], options[:since_id]).to_a
+      end
+    end
+
+    def self.to_a_paginated_by_fav_adjusted_recency(limit, options = {})
+      if options[:min_id].present?
+        paginate_by_min_id(limit, options[:min_id], options[:max_id]).reverse
+      else
+        ordered_by_fav_adjusted_recency(limit, options[:max_id], options[:since_id]).to_a
       end
     end
   end
