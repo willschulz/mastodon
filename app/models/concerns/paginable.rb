@@ -39,6 +39,7 @@ module Paginable
       query
     }
 
+    #gpt suggestion that broke public feed, either because bad code or because favs not cached.  going to walk back and try to make working reverse-chrono from created_at...
     scope :ordered_by_fav_adjusted_recency, -> {
       age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
         Arel.sql('EPOCH FROM NOW() - created_at')
@@ -47,6 +48,14 @@ module Paginable
       weighted_age = Arel::Nodes::Subtraction.new(age_in_seconds, fav_adjustment)
 
       query = joins(:status_stat).order(weighted_age.asc)
+      query
+    }
+
+    #testing basic chrono from created_at
+    scope :paginate_by_created_at, ->(limit, max_id = nil, since_id = nil) {
+      query = reorder(arel_table[:created_at]).limit(limit)
+      query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
+      query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
       query
     }
 
