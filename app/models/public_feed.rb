@@ -21,13 +21,13 @@ class PublicFeed
   def get(limit, max_id = nil, since_id = nil, min_id = nil)
     scope = public_scope
 
-    scope.merge!(without_replies_scope) unless with_replies?
-    scope.merge!(without_reblogs_scope) unless with_reblogs?
-    scope.merge!(local_only_scope) if local_only?
-    scope.merge!(remote_only_scope) if remote_only?
-    scope.merge!(account_filters_scope) if account?
-    scope.merge!(media_only_scope) if media_only?
-    scope.merge!(language_scope) if account&.chosen_languages.present?
+    #scope.merge!(without_replies_scope) unless with_replies?
+    #scope.merge!(without_reblogs_scope) unless with_reblogs?
+    #scope.merge!(local_only_scope) if local_only?
+    #scope.merge!(remote_only_scope) if remote_only?
+    #scope.merge!(account_filters_scope) if account?
+    #scope.merge!(media_only_scope) if media_only?
+    #scope.merge!(language_scope) if account&.chosen_languages.present?
 
     scope.cache_ids.testing_recency(limit, max_id: max_id, since_id: since_id, min_id: min_id)
   end
