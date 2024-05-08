@@ -67,7 +67,7 @@ module Paginable
 
       # Order by recency in seconds (actually, since it is a subtraction of past from present, to get DESC order, we'll use ASC)
       query = query.reorder(coalesced_favourites_count.desc)
-      query = query.order(recency_in_seconds).limit(limit)
+      query = query.order(recency_in_seconds.desc).limit(limit)
       
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
