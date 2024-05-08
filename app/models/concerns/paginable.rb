@@ -58,6 +58,8 @@ module Paginable
         StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)
       ])
 
+      weighted_favourites_count = Arel::Nodes::Multiplication.new(coalesced_favourites_count, 3600)
+
       # Hardcode the created_at timestamp of the newest post for debugging
       #hardcoded_newest_post_created_at = Arel::Nodes.build_quoted(DateTime.new(2024, 5, 9, 12, 0, 0))
       current_time = Arel::Nodes.build_quoted(DateTime.now)
@@ -74,7 +76,7 @@ module Paginable
       # Calculate the weighted score
       weighted_score = Arel::Nodes::Subtraction.new(
         age_in_seconds,
-        Arel::Nodes::Multiplication.new(coalesced_favourites_count, 3600)
+        weighted_favourites_count
       )
 
       # Order by the weighted score
