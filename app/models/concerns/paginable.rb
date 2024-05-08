@@ -72,27 +72,48 @@ module Paginable
     #   query
     # }
 
+    # This works!  But it's really weird to solve it by treating like counts as a time interval, rather than age as a bigint...
+    # scope :paginate_by_created_at, ->(limit, max_id = nil, since_id = nil) {
+    #   query = left_joins(:status_stat)
+    #   coalesced_favourites_count = Arel::Nodes::NamedFunction.new('COALESCE', [StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)])
+    
+    #   # Multiply the favourites count by 3600 and convert to interval
+    #   weighted_favourites_count = Arel::Nodes::Multiplication.new(coalesced_favourites_count, Arel::Nodes.build_quoted(3600))
+    #   interval_seconds = Arel::Nodes::NamedFunction.new('MAKE_INTERVAL', [Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), weighted_favourites_count])
+    
+    #   current_time = Arel::Nodes.build_quoted(DateTime.now)
+    #   created_at_column = arel_table[:created_at]
+    
+    #   age_in_seconds = Arel::Nodes::Subtraction.new(current_time, created_at_column)
+    
+    #   # Subtract the interval of weighted favourites from age in seconds
+    #   score = Arel::Nodes::Subtraction.new(age_in_seconds, interval_seconds)
+    
+    #   # Order by score ascending and limit the result
+    #   query = query.reorder(score.asc).limit(limit)
+    
+    #   query
+    # }
+
     scope :paginate_by_created_at, ->(limit, max_id = nil, since_id = nil) {
-      query = left_joins(:status_stat)
+      query = left_joins(:status_stat) # trying to avoid dropping 0-favourite posts in this join
       coalesced_favourites_count = Arel::Nodes::NamedFunction.new('COALESCE', [StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)])
     
-      # Multiply the favourites count by 3600 and convert to interval
-      weighted_favourites_count = Arel::Nodes::Multiplication.new(coalesced_favourites_count, Arel::Nodes.build_quoted(3600))
-      interval_seconds = Arel::Nodes::NamedFunction.new('MAKE_INTERVAL', [Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), weighted_favourites_count])
+      weighted_favourites_count = coalesced_favourites_count * 3600 #todo: make this math simple
     
       current_time = Arel::Nodes.build_quoted(DateTime.now)
       created_at_column = arel_table[:created_at]
     
-      age_in_seconds = Arel::Nodes::Subtraction.new(current_time, created_at_column)
+      age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [Arel.sql("'epoch' FROM"), current_time - created_at_column])
     
-      # Subtract the interval of weighted favourites from age in seconds
-      score = Arel::Nodes::Subtraction.new(age_in_seconds, interval_seconds)
+      score = age_in_seconds - weighted_favourites_count # corrected operation using epoch
     
-      # Order by score ascending and limit the result
+      # Order:
       query = query.reorder(score.asc).limit(limit)
     
       query
     }
+
 
 
     def self.to_a_paginated_by_id(limit, options = {})#still need this? how to paginate this way for rchron and my new way by timeline interface?
