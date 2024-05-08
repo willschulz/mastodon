@@ -37,7 +37,7 @@ module Paginable
       age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
         Arel.sql('EPOCH FROM NOW() - created_at')
       ])
-      fav_adjustment = StatusStat.arel_table[:favourites_count].mul(3600)
+      fav_adjustment = StatusStat.arel_table[:favourites_count].mul(60*30)
       weighted_age = Arel::Nodes::Subtraction.new(age_in_seconds, fav_adjustment)
 
       query = joins(:status_stat).order(weighted_age.asc)
