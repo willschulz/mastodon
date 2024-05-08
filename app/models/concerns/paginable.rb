@@ -47,7 +47,7 @@ module Paginable
     #testing recency + some function of fav.count
     scope :paginate_by_created_at, ->(limit, max_id = nil, since_id = nil) {
       #recency_with_favourites = Arel.sql("EXTRACT(EPOCH FROM now() - created_at) - (status_stats.favourites_count * 3600)") #this might have broken something
-      query = joins(:status_stat) #need to avoid dropping 0-favourite posts in this join -- need to find out how to treat "unjoined" as "0 favourites"
+      query = left_joins(:status_stat) #trying to avoid dropping 0-favourite posts in this join
       #query = query.reorder(StatusStat.arel_table[:favourites_count]).limit(limit) #this worked, though it seemed to have a limited chronological window within which it drew off posts and ordered them (could not load more posts afterwards)
       #query = query.reorder(arel_table[:created_at].desc).limit(limit) # works
       query = query.reorder(StatusStat.arel_table[:favourites_count].desc).order(arel_table[:created_at].desc).limit(limit) #should order by favourites_count.desc, then by created_at.desc
