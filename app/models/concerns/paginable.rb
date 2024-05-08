@@ -73,9 +73,14 @@ module Paginable
         created_at_column
       )
 
+      # Cast difference_in_seconds to numeric
+      numeric_age_in_seconds = Arel::Nodes::NamedFunction.new('CAST', [
+        Arel::Nodes::As.new(age_in_seconds, Arel::Nodes::SqlLiteral.new('numeric'))
+      ])
+
       # Calculate the weighted score
       weighted_score = Arel::Nodes::Subtraction.new(
-        age_in_seconds,
+        numeric_age_in_seconds,
         weighted_favourites_count
       )
 
