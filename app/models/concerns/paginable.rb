@@ -58,14 +58,13 @@ module Paginable
         StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)
       ])
 
-      # Get the created_at timestamp of the newest post
-      newest_post_created_at = Status.order(created_at: :desc).limit(1).pluck(:created_at).first
-      newest_post_created_at = Arel::Nodes.build_quoted(newest_post_created_at)
+      # Hardcode the created_at timestamp of the newest post for debugging
+      hardcoded_newest_post_created_at = Arel::Nodes.build_quoted(DateTime.new(2024, 5, 9, 12, 0, 0))
 
-      # Calculate age in seconds of each post relative to the newest post
+      # Calculate age in seconds of each post relative to the hardcoded newest post
       age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
         Arel::Nodes::SqlLiteral.new('EPOCH FROM'),
-        Arel::Nodes::Subtraction.new(newest_post_created_at, arel_table[:created_at])
+        Arel::Nodes::Subtraction.new(hardcoded_newest_post_created_at, arel_table[:created_at])
       ])
 
       # Order by the age in seconds
