@@ -89,8 +89,10 @@ module Paginable
         weighted_favourites_count
       )
 
+      # todo: try adding min(weighted_score) to weighted_score in case negative numbers are the problem...
+
       # Order by the weighted score
-      query = query.reorder(age_in_seconds.asc).limit(limit)
+      query = query.reorder(numeric_age_in_seconds.asc).limit(limit)
 
       # Order by the age in seconds
       #query = query.reorder(coalesced_favourites_count.desc)
