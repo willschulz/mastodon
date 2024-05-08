@@ -62,9 +62,9 @@ module Paginable
         Arel::Nodes::Subtraction.new(current_time, created_at_column)
       ])
 
-      #score = age_in_seconds # this works
+      score = age_in_seconds # this works
       #score = weighted_favourites_count # this works
-      score = age_in_seconds - weighted_favourites_count # this is what I want, and it fails
+      #score = age_in_seconds - weighted_favourites_count # this is what I want, and it fails
 
       # Order:
       query = query.reorder(score.asc).limit(limit)
