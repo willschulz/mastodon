@@ -78,16 +78,16 @@ module Paginable
       coalesced_favourites_count = Arel::Nodes::NamedFunction.new('COALESCE', [StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)])
     
       # Multiply the favourites count by 3600 and convert to interval
-      weighted_favourites_count = Arel::Nodes::Multiplication.new(coalesced_favourites_count, Arel::Nodes.build_quoted(3600))
+      weighted_favourites_count = coalesced_favourites_count * 3600
       interval_seconds = Arel::Nodes::NamedFunction.new('MAKE_INTERVAL', [Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), weighted_favourites_count])
     
       current_time = Arel::Nodes.build_quoted(DateTime.now)
       created_at_column = arel_table[:created_at]
     
-      age_in_seconds = Arel::Nodes::Subtraction.new(current_time, created_at_column)
+      age_in_seconds = current_time - created_at_column
     
       # Subtract the interval of weighted favourites from age in seconds
-      score = Arel::Nodes::Subtraction.new(age_in_seconds, interval_seconds)
+      score = age_in_seconds - interval_seconds
     
       # Order by score ascending and limit the result
       query = query.reorder(score.asc).limit(limit)
