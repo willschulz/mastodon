@@ -56,7 +56,7 @@ module Paginable
       current_time = Arel::Nodes.build_quoted(DateTime.now)
       created_at_column = arel_table[:created_at]
 
-      age_in_seconds = current_time.to_i - created_at_column.to_i
+      age_in_seconds = current_time - created_at_column
       #age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
       #  Arel.sql('EPOCH FROM'),
       #  Arel::Nodes::Subtraction.new(current_time, created_at_column)
