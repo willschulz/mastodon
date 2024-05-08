@@ -59,14 +59,15 @@ module Paginable
       ])
 
       # Hardcode the created_at timestamp of the newest post for debugging
-      hardcoded_newest_post_created_at = Arel::Nodes.build_quoted(DateTime.new(2024, 5, 9, 12, 0, 0))
+      #hardcoded_newest_post_created_at = Arel::Nodes.build_quoted(DateTime.new(2024, 5, 9, 12, 0, 0))
+      current_time = Arel::Nodes.build_quoted(DateTime.now)
 
       # Extract created_at into a variable
       created_at_column = arel_table[:created_at]
 
       # Calculate the difference in seconds between hardcoded newest post created_at and each post's created_at
       age_in_seconds = Arel::Nodes::Subtraction.new(
-        hardcoded_newest_post_created_at, 
+        current_time, 
         created_at_column
       )
 
