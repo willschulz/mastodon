@@ -72,16 +72,16 @@ module Paginable
       # Cast difference_in_seconds to numeric (troublesome)
       #numeric_age_in_seconds = Arel::Nodes::NamedFunction.new('CAST', [age_in_seconds, Arel::Nodes.build_quoted('NUMERIC')])
 
-      numeric_age_in_seconds = Arel::Nodes::Subtraction.new(
-        current_time.to_i, 
-        created_at_column.to_i
-      )
+      #numeric_age_in_seconds = Arel::Nodes::Subtraction.new(
+      #  current_time.to_i, 
+      #  created_at_column.to_i
+      #)
 
       # Calculate the weighted score
-      weighted_score = Arel::Nodes::Subtraction.new(
-        numeric_age_in_seconds,
-        weighted_favourites_count
-      )
+      #weighted_score = Arel::Nodes::Subtraction.new(
+      #  numeric_age_in_seconds,
+      #  weighted_favourites_count
+      #)
 
       # todo: try adding min(weighted_score) to weighted_score in case negative numbers are the problem...
 
