@@ -46,14 +46,7 @@ module Paginable
 
     #testing recency + some function of fav.count
     scope :paginate_by_created_at, ->(limit, max_id = nil, since_id = nil) {
-      #recency_with_favourites = Arel.sql("EXTRACT(EPOCH FROM now() - created_at) - (status_stats.favourites_count * 3600)") #this might have broken something
       query = left_joins(:status_stat) #trying to avoid dropping 0-favourite posts in this join
-      #query = query.reorder(StatusStat.arel_table[:favourites_count]).limit(limit) #this worked, though it seemed to have a limited chronological window within which it drew off posts and ordered them (could not load more posts afterwards)
-      #query = query.reorder(arel_table[:created_at].desc).limit(limit) # works
-      #query = query.reorder(StatusStat.arel_table[:favourites_count].desc).order(arel_table[:created_at].desc).limit(limit) #works, but 0-fav posts are at the top, which isn't what I wanted (and sti
-      #ordering = "COALESCE(status_stat.favourites_count, 0) DESC, created_at DESC" # This GPT suggestion broke things: Use COALESCE to default favourites_count to 0 if it is NULL, and implement rest of logic here
-      #query = query.order(Arel.sql(ordering)).limit(limit)
-      # Create an Arel node to handle nulls in favourites_count
       coalesced_favourites_count = Arel::Nodes::NamedFunction.new('COALESCE', [ #
         StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)
       ])
@@ -63,45 +56,14 @@ module Paginable
       current_time = Arel::Nodes.build_quoted(DateTime.now)
       created_at_column = arel_table[:created_at]
 
-      # Calculate the difference in seconds between hardcoded newest post created_at and each post's created_at
-      #age_in_seconds = Arel::Nodes::Subtraction.new(
-      #  current_time, 
-      #  created_at_column
-      #)
+      age_in_seconds = current_time - created_at_column
 
-      age_in_seconds = current_time - created_at_column #ok, I can do simple math
+      #score = age_in_seconds # this works
+      #score = weighted_favourites_count # this works
+      score = age_in_seconds - weighted_favourites_count # this is what I want, and it fails
 
-      # Cast difference_in_seconds to numeric (troublesome)
-      #numeric_age_in_seconds = Arel::Nodes::NamedFunction.new('CAST', [age_in_seconds, Arel::Nodes.build_quoted('NUMERIC')])
-
-      #numeric_age_in_seconds = Arel::Nodes::Subtraction.new(
-      #  current_time.to_i, 
-      #  created_at_column.to_i
-      #)
-
-      #numeric_age_in_seconds = Arel::Nodes::NamedFunction.new(
-      #  'CAST',
-      #  [age_in_seconds.as('NUMERIC')]
-      #)
-
-      # Calculate the weighted score
-      #weighted_score = Arel::Nodes::Subtraction.new(
-      #  numeric_age_in_seconds,
-      #  weighted_favourites_count
-      #)
-
-      weighted_score = age_in_seconds - weighted_favourites_count
-      weighted_score_min = weighted_score.minimum
-      weighted_score = weighted_score - weighted_score_min
-
-      # todo: try adding min(weighted_score) to weighted_score in case negative numbers are the problem...
-
-      # Order by the weighted score
-      query = query.reorder(weighted_score.asc).limit(limit)
-
-      # Order by the age in seconds
-      #query = query.reorder(coalesced_favourites_count.desc)
-      #query = query.order(age_in_seconds.asc).limit(limit)
+      # Order:
+      query = query.reorder(score.asc).limit(limit)
       
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
