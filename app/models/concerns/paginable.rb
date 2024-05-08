@@ -58,9 +58,16 @@ module Paginable
         StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)
       ])
 
-      # Order by the coalesced favourites count and created_at
+      # Calculate recency in seconds
+      current_time = Arel::Nodes::NamedFunction.new('NOW', [])
+      recency_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
+        Arel::Nodes::SqlLiteral.new('EPOCH FROM'),
+        Arel::Nodes::Subtraction.new(current_time, arel_table[:created_at])
+      ])
+
+      # Order by recency in seconds (actually, since it is a subtraction of past from present, to get DESC order, we'll use ASC)
       query = query.reorder(coalesced_favourites_count.desc)
-      query = query.order(arel_table[:created_at].desc).limit(limit)
+      query = query.order(recency_in_seconds).limit(limit)
       
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
