@@ -61,11 +61,14 @@ module Paginable
       # Hardcode the created_at timestamp of the newest post for debugging
       hardcoded_newest_post_created_at = Arel::Nodes.build_quoted(DateTime.new(2024, 5, 9, 12, 0, 0))
 
+      # Extract created_at into a variable
+      age_in_seconds = arel_table[:created_at]
+
       # Calculate age in seconds of each post relative to the hardcoded newest post
-      age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
-        Arel::Nodes::SqlLiteral.new('EPOCH FROM'),
-        Arel::Nodes::Subtraction.new(hardcoded_newest_post_created_at, arel_table[:created_at])
-      ])
+      #age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
+      #  Arel::Nodes::SqlLiteral.new('EPOCH FROM'),
+      #  Arel::Nodes::Subtraction.new(hardcoded_newest_post_created_at, arel_table[:created_at])
+      #])
 
       # Order by the age in seconds
       query = query.reorder(coalesced_favourites_count.desc)
