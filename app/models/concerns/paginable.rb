@@ -32,18 +32,6 @@ module Paginable
       query
     }
 
-    #gpt suggestion that broke public feed, either because bad code or because favs not cached.  going to walk back and try to make working reverse-chrono from created_at...
-    scope :ordered_by_fav_adjusted_recency, -> {
-      age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
-        Arel.sql('EPOCH FROM NOW() - created_at')
-      ])
-      fav_adjustment = StatusStat.arel_table[:favourites_count].mul(60*30)
-      weighted_age = Arel::Nodes::Subtraction.new(age_in_seconds, fav_adjustment)
-
-      query = joins(:status_stat).order(weighted_age.asc)
-      query
-    }
-
     #testing recency + some function of fav.count
     # scope :paginate_by_created_at, ->(limit, max_id = nil, since_id = nil) {
     #   query = left_joins(:status_stat) #trying to avoid dropping 0-favourite posts in this join
@@ -78,7 +66,7 @@ module Paginable
       coalesced_favourites_count = Arel::Nodes::NamedFunction.new('COALESCE', [StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)])
     
       # Multiply the favourites count by 3600 and convert to interval
-      weighted_favourites_count = coalesced_favourites_count * 3600
+      weighted_favourites_count = coalesced_favourites_count * 60*30
       interval_seconds = Arel::Nodes::NamedFunction.new('MAKE_INTERVAL', [Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), weighted_favourites_count])
     
       current_time = Arel::Nodes.build_quoted(DateTime.now)
