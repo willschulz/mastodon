@@ -21,52 +21,13 @@ module Paginable
       query
     }
 
-    #my first attempt:
-    scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
-      query = joins(:status_stat)
-              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 100000000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],22)).desc) #good but bitshift not working as intended
-              .limit(20)
-      query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
-      query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-      query = query
-      query
-    }
-
-    #testing recency + some function of fav.count
-    # scope :paginate_by_created_at, ->(limit, max_id = nil, since_id = nil) {
-    #   query = left_joins(:status_stat) #trying to avoid dropping 0-favourite posts in this join
-    #   coalesced_favourites_count = Arel::Nodes::NamedFunction.new('COALESCE', [StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)])
-
-    #   weighted_favourites_count = coalesced_favourites_count * 3600 #todo: make this math simple
-
-    #   current_time = Arel::Nodes.build_quoted(DateTime.now)
-    #   created_at_column = arel_table[:created_at]
-
-    #   age_in_seconds = current_time - created_at_column
-    #   #age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
-    #   #  Arel.sql('EPOCH FROM'),
-    #   #  Arel::Nodes::Subtraction.new(current_time, created_at_column)
-    #   #])
-
-    #   score = age_in_seconds # this works
-    #   #score = weighted_favourites_count # this works
-    #   #score = age_in_seconds - weighted_favourites_count # this is what I want, and it fails
-
-    #   # Order:
-    #   query = query.reorder(score.asc).limit(limit)
-      
-    #   query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
-    #   query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-    #   query
-    # }
-
     # ## This works!  But it's really weird to solve it by treating like counts as a time interval, rather than age as a bigint...
-    scope :paginate_by_created_at, ->(limit, max_id = nil, since_id = nil) {
+    scope :paginate_by_age_and_likes, ->(limit, max_id = nil, since_id = nil) {
       query = left_joins(:status_stat)
       coalesced_favourites_count = Arel::Nodes::NamedFunction.new('COALESCE', [StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)])
     
       # Multiply the favourites count by 3600 and convert to interval
-      weighted_favourites_count = coalesced_favourites_count * 60*30
+      weighted_favourites_count = coalesced_favourites_count * 60*10
       interval_seconds = Arel::Nodes::NamedFunction.new('MAKE_INTERVAL', [Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), Arel::Nodes.build_quoted(0), weighted_favourites_count])
     
       current_time = Arel::Nodes.build_quoted(DateTime.now)
@@ -111,7 +72,7 @@ module Paginable
       if options[:min_id].present?
         paginate_by_min_id(limit, options[:min_id], options[:max_id]).reverse
       else
-        paginate_by_created_at(limit, options[:max_id], options[:since_id]).to_a
+        paginate_by_age_and_likes(limit, options[:max_id], options[:since_id]).to_a
       end
     end
   end
