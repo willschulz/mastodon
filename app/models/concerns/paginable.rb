@@ -73,8 +73,8 @@ module Paginable
 
       # Calculate the weighted score
       weighted_score = Arel::Nodes::Addition.new(
-        difference_in_seconds,
-        Arel::Nodes::Multiplication.new(coalesced_favourites_count, -3600)
+        age_in_seconds,
+        Arel::Nodes::Multiplication.new(coalesced_favourites_count, Arel::Nodes.build_quoted(-3600))
       )
 
       # Order by the weighted score
