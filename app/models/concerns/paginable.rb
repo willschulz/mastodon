@@ -60,11 +60,7 @@ module Paginable
 
       weighted_favourites_count = Arel::Nodes::Multiplication.new(coalesced_favourites_count, 3600)
 
-      # Hardcode the created_at timestamp of the newest post for debugging
-      #hardcoded_newest_post_created_at = Arel::Nodes.build_quoted(DateTime.new(2024, 5, 9, 12, 0, 0))
       current_time = Arel::Nodes.build_quoted(DateTime.now)
-
-      # Extract created_at into a variable
       created_at_column = arel_table[:created_at]
 
       # Calculate the difference in seconds between hardcoded newest post created_at and each post's created_at
@@ -73,13 +69,13 @@ module Paginable
         created_at_column
       )
 
-      # Cast difference_in_seconds to numeric
-      #numeric_age_in_seconds = Arel::Nodes::NamedFunction.new('CAST', [
-      #  Arel::Nodes::As.new(age_in_seconds, Arel::Nodes::SqlLiteral.new('numeric'))
-      #])
+      # Cast difference_in_seconds to numeric (troublesome)
+      #numeric_age_in_seconds = Arel::Nodes::NamedFunction.new('CAST', [age_in_seconds, Arel::Nodes.build_quoted('NUMERIC')])
 
-      # todo: try casting with Arel (no SqlLiteral)
-      numeric_age_in_seconds = Arel::Nodes::NamedFunction.new('CAST', [age_in_seconds, Arel::Nodes.build_quoted('NUMERIC')])
+      numeric_age_in_seconds = Arel::Nodes::Subtraction.new(
+        current_time.to_i, 
+        created_at_column.to_i
+      )
 
       # Calculate the weighted score
       weighted_score = Arel::Nodes::Subtraction.new(
