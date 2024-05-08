@@ -50,7 +50,9 @@ module Paginable
       query = left_joins(:status_stat) #trying to avoid dropping 0-favourite posts in this join
       #query = query.reorder(StatusStat.arel_table[:favourites_count]).limit(limit) #this worked, though it seemed to have a limited chronological window within which it drew off posts and ordered them (could not load more posts afterwards)
       #query = query.reorder(arel_table[:created_at].desc).limit(limit) # works
-      query = query.reorder(StatusStat.arel_table[:favourites_count].desc).order(arel_table[:created_at].desc).limit(limit) #should order by favourites_count.desc, then by created_at.desc
+      #query = query.reorder(StatusStat.arel_table[:favourites_count].desc).order(arel_table[:created_at].desc).limit(limit) #works, but 0-fav posts are at the top, which isn't what I wanted (and sti
+      ordering = "COALESCE(status_stat.favourites_count, 0) DESC, created_at DESC" # Trying GPT suggestion: Use COALESCE to default favourites_count to 0 if it is NULL, and implement rest of logic here
+      query = query.order(Arel.sql(ordering)).limit(limit)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
       query
