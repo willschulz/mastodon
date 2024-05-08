@@ -58,16 +58,19 @@ module Paginable
         StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)
       ])
 
-      # Calculate recency in seconds
-      current_time = Arel::Nodes::NamedFunction.new('NOW', [])
-      recency_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
+      # Get the created_at timestamp of the newest post
+      newest_post_created_at = Status.order(created_at: :desc).limit(1).pluck(:created_at).first
+      newest_post_created_at = Arel::Nodes.build_quoted(newest_post_created_at)
+
+      # Calculate age in seconds of each post relative to the newest post
+      age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
         Arel::Nodes::SqlLiteral.new('EPOCH FROM'),
-        Arel::Nodes::Subtraction.new(current_time, arel_table[:created_at])
+        Arel::Nodes::Subtraction.new(newest_post_created_at, arel_table[:created_at])
       ])
 
-      # Order by recency in seconds (actually, since it is a subtraction of past from present, to get DESC order, we'll use ASC)
+      # Order by the age in seconds
       query = query.reorder(coalesced_favourites_count.desc)
-      query = query.order(recency_in_seconds.desc).limit(limit)
+      query = query.order(age_in_seconds.asc).limit(limit)
       
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
