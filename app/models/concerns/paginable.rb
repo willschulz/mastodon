@@ -85,7 +85,7 @@ module Paginable
       )
 
       # Order by the weighted score
-      query = query.reorder(age_in_seconds.asc).limit(limit)
+      query = query.reorder(weighted_score.asc).limit(limit)
 
       # Order by the age in seconds
       #query = query.reorder(coalesced_favourites_count.desc)
