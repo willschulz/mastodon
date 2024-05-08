@@ -64,10 +64,12 @@ module Paginable
       created_at_column = arel_table[:created_at]
 
       # Calculate the difference in seconds between hardcoded newest post created_at and each post's created_at
-      age_in_seconds = Arel::Nodes::Subtraction.new(
-        current_time, 
-        created_at_column
-      )
+      #age_in_seconds = Arel::Nodes::Subtraction.new(
+      #  current_time, 
+      #  created_at_column
+      #)
+
+      age_in_seconds = current_time - created_at_column
 
       # Cast difference_in_seconds to numeric (troublesome)
       #numeric_age_in_seconds = Arel::Nodes::NamedFunction.new('CAST', [age_in_seconds, Arel::Nodes.build_quoted('NUMERIC')])
