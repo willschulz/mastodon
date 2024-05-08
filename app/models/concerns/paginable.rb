@@ -71,15 +71,18 @@ module Paginable
         created_at_column
       )
 
-      # Calculate age in seconds of each post relative to the hardcoded newest post
-      #age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
-      #  Arel::Nodes::SqlLiteral.new('EPOCH FROM'),
-      #  Arel::Nodes::Subtraction.new(hardcoded_newest_post_created_at, arel_table[:created_at])
-      #])
+      # Calculate the weighted score
+      weighted_score = Arel::Nodes::Addition.new(
+        difference_in_seconds,
+        Arel::Nodes::Multiplication.new(coalesced_favourites_count, Arel::Nodes.build_quoted(-3600))
+      )
+
+      # Order by the weighted score
+      query = query.reorder(weighted_score).limit(limit)
 
       # Order by the age in seconds
-      query = query.reorder(coalesced_favourites_count.desc)
-      query = query.order(age_in_seconds.asc).limit(limit)
+      #query = query.reorder(coalesced_favourites_count.desc)
+      #query = query.order(age_in_seconds.asc).limit(limit)
       
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
