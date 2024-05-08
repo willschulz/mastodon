@@ -58,7 +58,7 @@ module Paginable
         StatusStat.arel_table[:favourites_count], Arel::Nodes.build_quoted(0)
       ])
 
-      weighted_favourites_count = Arel::Nodes::Multiplication.new(coalesced_favourites_count, 3600)
+      weighted_favourites_count = Arel::Nodes::Multiplication.new(coalesced_favourites_count, 3600) #todo: make this math simple
 
       current_time = Arel::Nodes.build_quoted(DateTime.now)
       created_at_column = arel_table[:created_at]
@@ -69,7 +69,7 @@ module Paginable
       #  created_at_column
       #)
 
-      age_in_seconds = current_time - created_at_column
+      age_in_seconds = current_time - created_at_column #ok, I can do simple math
 
       # Cast difference_in_seconds to numeric (troublesome)
       #numeric_age_in_seconds = Arel::Nodes::NamedFunction.new('CAST', [age_in_seconds, Arel::Nodes.build_quoted('NUMERIC')])
@@ -90,10 +90,12 @@ module Paginable
       #  weighted_favourites_count
       #)
 
+      weighted_score = age_in_seconds - weighted_favourites_count
+
       # todo: try adding min(weighted_score) to weighted_score in case negative numbers are the problem...
 
       # Order by the weighted score
-      query = query.reorder(age_in_seconds.asc).limit(limit)
+      query = query.reorder(weighted_score.asc).limit(limit)
 
       # Order by the age in seconds
       #query = query.reorder(coalesced_favourites_count.desc)
