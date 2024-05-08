@@ -80,7 +80,7 @@ module Paginable
 
       # todo: try casting with Arel (no SqlLiteral)
       numeric_age_in_seconds = Arel::Nodes::NamedFunction.new('CAST', [
-        Arel::Nodes::As.new(age_in_seconds, 'numeric')
+        Arel::Nodes::As.new(age_in_seconds, Arel.sql('NUMERIC'))
       ])
 
       # Calculate the weighted score
