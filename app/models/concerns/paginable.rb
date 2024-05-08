@@ -91,6 +91,8 @@ module Paginable
       #)
 
       weighted_score = age_in_seconds - weighted_favourites_count
+      weighted_score_min = weighted_score.minimum
+      weighted_score = weighted_score - weighted_score_min
 
       # todo: try adding min(weighted_score) to weighted_score in case negative numbers are the problem...
 
