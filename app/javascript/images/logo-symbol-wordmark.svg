@@ -33,62 +33,62 @@
      inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg4" />
-  <defs id="defs5">
-    <linearGradient id="gradient-1-74" gradientUnits="userSpaceOnUse" x1="-210.212" y1="656.925" x2="-210.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-1"/>
-    <linearGradient id="gradient-1">
-      <title>Original</title>
-      <stop style="stop-color: rgb(99, 100, 255);" offset="0"/>
-      <stop style="stop-color: rgb(86, 58, 204);" offset="1"/>
-    </linearGradient>
-    <linearGradient id="gradient-0-65" gradientUnits="userSpaceOnUse" x1="-200.212" y1="656.925" x2="-200.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-0"/>
-    <linearGradient id="gradient-0">
-      <title>Dark1</title>
-      <stop style="stop-color: rgb(92, 77, 227);" offset="0"/>
-      <stop style="stop-color: rgb(31, 38, 179);" offset="1"/>
-    </linearGradient>
-    <linearGradient id="gradient-1-75" gradientUnits="userSpaceOnUse" x1="-190.212" y1="656.925" x2="-190.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-1"/>
-    <linearGradient id="gradient-106-90" gradientUnits="userSpaceOnUse" x1="-180.212" y1="656.925" x2="-180.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-106"/>
-    <linearGradient id="gradient-106">
-      <title>Dark2</title>
-      <stop style="stop-color: rgb(74, 58, 222);" offset="0"/>
-      <stop style="stop-color: rgb(19, 28, 179);" offset="1"/>
-    </linearGradient>
-    <linearGradient id="gradient-99-42" gradientUnits="userSpaceOnUse" x1="-170.212" y1="656.925" x2="-170.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-99"/>
-    <linearGradient id="gradient-99">
-      <title>Dark3</title>
-      <stop style="stop-color: rgb(60, 42, 216);" offset="0"/>
-      <stop style="stop-color: rgb(13, 20, 131);" offset="1"/>
-    </linearGradient>
-    <linearGradient id="gradient-0-66" gradientUnits="userSpaceOnUse" x1="-210.212" y1="666.925" x2="-210.212" y2="676.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-0"/>
-    <linearGradient id="gradient-106-91" gradientUnits="userSpaceOnUse" x1="-190.212" y1="666.925" x2="-190.212" y2="676.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-106"/>
-    <linearGradient id="gradient-1-76" gradientUnits="userSpaceOnUse" x1="-210.212" y1="676.925" x2="-210.212" y2="686.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-1"/>
-    <linearGradient id="gradient-106-92" gradientUnits="userSpaceOnUse" x1="-200.212" y1="676.925" x2="-200.212" y2="686.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-106"/>
-    <linearGradient id="gradient-0-67" gradientUnits="userSpaceOnUse" x1="-190.212" y1="676.925" x2="-190.212" y2="686.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-0"/>
-    <linearGradient id="gradient-99-43" gradientUnits="userSpaceOnUse" x1="-180.212" y1="676.925" x2="-180.212" y2="686.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-99"/>
-    <linearGradient id="gradient-106-93" gradientUnits="userSpaceOnUse" x1="-210.212" y1="686.925" x2="-210.212" y2="696.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-106"/>
-    <linearGradient id="gradient-99-44" gradientUnits="userSpaceOnUse" x1="-190.212" y1="686.925" x2="-190.212" y2="696.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-99"/>
-    <linearGradient id="gradient-99-45" gradientUnits="userSpaceOnUse" x1="-210.212" y1="696.925" x2="-210.212" y2="706.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-99"/>
-  </defs>
   <symbol id="logo-symbol-wordmark">
     <defs id="defs4"/>
+    <defs id="defs5">
+      <linearGradient id="gradient-1-74" gradientUnits="userSpaceOnUse" x1="-210.212" y1="656.925" x2="-210.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-1"/>
+      <linearGradient id="gradient-1">
+        <title>Original</title>
+        <stop style="stop-color: rgb(99, 100, 255);" offset="0"/>
+        <stop style="stop-color: rgb(86, 58, 204);" offset="1"/>
+      </linearGradient>
+      <linearGradient id="gradient-0-65" gradientUnits="userSpaceOnUse" x1="-200.212" y1="656.925" x2="-200.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-0"/>
+      <linearGradient id="gradient-0">
+        <title>Dark1</title>
+        <stop style="stop-color: rgb(92, 77, 227);" offset="0"/>
+        <stop style="stop-color: rgb(31, 38, 179);" offset="1"/>
+      </linearGradient>
+      <linearGradient id="gradient-1-75" gradientUnits="userSpaceOnUse" x1="-190.212" y1="656.925" x2="-190.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-1"/>
+      <linearGradient id="gradient-106-90" gradientUnits="userSpaceOnUse" x1="-180.212" y1="656.925" x2="-180.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-106"/>
+      <linearGradient id="gradient-106">
+        <title>Dark2</title>
+        <stop style="stop-color: rgb(74, 58, 222);" offset="0"/>
+        <stop style="stop-color: rgb(19, 28, 179);" offset="1"/>
+      </linearGradient>
+      <linearGradient id="gradient-99-42" gradientUnits="userSpaceOnUse" x1="-170.212" y1="656.925" x2="-170.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-99"/>
+      <linearGradient id="gradient-99">
+        <title>Dark3</title>
+        <stop style="stop-color: rgb(60, 42, 216);" offset="0"/>
+        <stop style="stop-color: rgb(13, 20, 131);" offset="1"/>
+      </linearGradient>
+      <linearGradient id="gradient-0-66" gradientUnits="userSpaceOnUse" x1="-210.212" y1="666.925" x2="-210.212" y2="676.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-0"/>
+      <linearGradient id="gradient-106-91" gradientUnits="userSpaceOnUse" x1="-190.212" y1="666.925" x2="-190.212" y2="676.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-106"/>
+      <linearGradient id="gradient-1-76" gradientUnits="userSpaceOnUse" x1="-210.212" y1="676.925" x2="-210.212" y2="686.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-1"/>
+      <linearGradient id="gradient-106-92" gradientUnits="userSpaceOnUse" x1="-200.212" y1="676.925" x2="-200.212" y2="686.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-106"/>
+      <linearGradient id="gradient-0-67" gradientUnits="userSpaceOnUse" x1="-190.212" y1="676.925" x2="-190.212" y2="686.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-0"/>
+      <linearGradient id="gradient-99-43" gradientUnits="userSpaceOnUse" x1="-180.212" y1="676.925" x2="-180.212" y2="686.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-99"/>
+      <linearGradient id="gradient-106-93" gradientUnits="userSpaceOnUse" x1="-210.212" y1="686.925" x2="-210.212" y2="696.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-106"/>
+      <linearGradient id="gradient-99-44" gradientUnits="userSpaceOnUse" x1="-190.212" y1="686.925" x2="-190.212" y2="696.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-99"/>
+      <linearGradient id="gradient-99-45" gradientUnits="userSpaceOnUse" x1="-210.212" y1="696.925" x2="-210.212" y2="706.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-99"/>
+    </defs>
+    <use id="use4" xlink:href="#logo-symbol-wordmark"/>
+    <g transform="matrix(0.807556, 0, 0, 0.807556, -35.586258, 23.62525)" style="">
+      <rect x="-251.294" y="576.865" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-1-74');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-239.617" y="576.865" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-0-65');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-227.941" y="576.865" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-1-75');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-216.264" y="576.865" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-106-90');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-204.588" y="576.865" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-99-42');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-251.294" y="585.647" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-0-66');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-227.941" y="585.647" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-106-91');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-251.294" y="594.428" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-1-76');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-239.617" y="594.428" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-106-92');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-227.941" y="594.428" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-0-67');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-216.264" y="594.428" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-99-43');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-251.294" y="603.209" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-106-93');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-227.941" y="603.209" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-99-44');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+      <rect x="-251.294" y="611.991" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-99-45');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
+    </g>
   </symbol>
-  <use id="use4" xlink:href="#logo-symbol-wordmark"/>
-  <g transform="matrix(0.807556, 0, 0, 0.807556, -35.586258, 23.62525)" style="">
-    <rect x="-251.294" y="576.865" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-1-74');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-239.617" y="576.865" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-0-65');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-227.941" y="576.865" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-1-75');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-216.264" y="576.865" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-106-90');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-204.588" y="576.865" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-99-42');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-251.294" y="585.647" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-0-66');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-227.941" y="585.647" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-106-91');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-251.294" y="594.428" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-1-76');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-239.617" y="594.428" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-106-92');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-227.941" y="594.428" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-0-67');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-216.264" y="594.428" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-99-43');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-251.294" y="603.209" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-106-93');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-227.941" y="603.209" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-99-44');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-    <rect x="-251.294" y="611.991" width="11.677" height="8.781" style="paint-order: fill; fill-rule: nonzero; fill: url('#gradient-99-45');" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
-  </g>
   <use
      xlink:href="#logo-symbol-wordmark"
      id="use4" />
