@@ -1,40 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   width="261"
-   height="66"
-   viewBox="0 0 261 66"
-   fill="none"
-   version="1.1"
-   id="svg4"
-   sodipodi:docname="logo-symbol-wordmark.svg"
-   inkscape:version="1.3 (0e150ed, 2023-07-21)"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs5" />
-  <sodipodi:namedview
-     id="namedview4"
-     pagecolor="#505050"
-     bordercolor="#eeeeee"
-     borderopacity="1"
-     inkscape:showpageshadow="0"
-     inkscape:pageopacity="0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#505050"
-     inkscape:zoom="2.5977011"
-     inkscape:cx="130.5"
-     inkscape:cy="33.106195"
-     inkscape:window-width="1776"
-     inkscape:window-height="917"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="svg4" />
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="261" height="66" viewBox="0 0 261 66" fill="none" version="1.1" id="svg4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs id="defs5"/>
   <symbol id="logo-symbol-wordmark">
-    <g transform="matrix(0.807556, 0, 0, 0.807556, -35.586258, 23.62525)" style="">
+    <g transform="matrix(0.882997, 0, 0, 0.882997, -40.201591, 22.446177)" style="">
       <rect x="-251.294" y="576.865" width="11.677" height="8.781" fill="url(#gradient-1-74)" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
       <rect x="-239.617" y="576.865" width="11.677" height="8.781" fill="url(#gradient-0-65)" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
       <rect x="-227.941" y="576.865" width="11.677" height="8.781" fill="url(#gradient-1-75)" transform="matrix(0.412848, 0.9108, -0.548968, 1.211099, 493.134033, -495.193268)"/>
@@ -54,7 +22,7 @@
       <linearGradient id="gradient-1-74" gradientUnits="userSpaceOnUse" x1="-210.212" y1="656.925" x2="-210.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-1"/>
       <linearGradient id="gradient-1">
         <stop stop-color="#6363ff" offset="0"/>
-        <stop stop-color="#563acc" offset="1"/> 
+        <stop stop-color="#563acc" offset="1"/>
       </linearGradient>
       <linearGradient id="gradient-0-65" gradientUnits="userSpaceOnUse" x1="-200.212" y1="656.925" x2="-200.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-0"/>
       <linearGradient id="gradient-0">
@@ -83,7 +51,6 @@
       <linearGradient id="gradient-99-45" gradientUnits="userSpaceOnUse" x1="-210.212" y1="696.925" x2="-210.212" y2="706.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-99"/>
     </defs>
   </symbol>
-  <use
-     xlink:href="#logo-symbol-wordmark"
-     id="use4" />
+  <use id="use4" transform="matrix(1, 0, 0, 1, -2.442382, 0.178735)" xlink:href="#logo-symbol-wordmark"/>
+  <text style="fill: rgb(235, 235, 235); font-family: Futura; font-size: 60.3px; white-space: pre;" x="48.501" y="50.04">Argyle</text>
 </svg>
