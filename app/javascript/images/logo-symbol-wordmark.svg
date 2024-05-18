@@ -53,26 +53,22 @@
     <defs id="defs6">
       <linearGradient id="gradient-1-74" gradientUnits="userSpaceOnUse" x1="-210.212" y1="656.925" x2="-210.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-1"/>
       <linearGradient id="gradient-1">
-        <title>Original</title>
         <stop style="stop-color: rgb(99, 100, 255);" offset="0"/>
         <stop style="stop-color: rgb(86, 58, 204);" offset="1"/>
       </linearGradient>
       <linearGradient id="gradient-0-65" gradientUnits="userSpaceOnUse" x1="-200.212" y1="656.925" x2="-200.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-0"/>
       <linearGradient id="gradient-0">
-        <title>Dark1</title>
         <stop style="stop-color: rgb(92, 77, 227);" offset="0"/>
         <stop style="stop-color: rgb(31, 38, 179);" offset="1"/>
       </linearGradient>
       <linearGradient id="gradient-1-75" gradientUnits="userSpaceOnUse" x1="-190.212" y1="656.925" x2="-190.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-1"/>
       <linearGradient id="gradient-106-90" gradientUnits="userSpaceOnUse" x1="-180.212" y1="656.925" x2="-180.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-106"/>
       <linearGradient id="gradient-106">
-        <title>Dark2</title>
         <stop style="stop-color: rgb(74, 58, 222);" offset="0"/>
         <stop style="stop-color: rgb(19, 28, 179);" offset="1"/>
       </linearGradient>
       <linearGradient id="gradient-99-42" gradientUnits="userSpaceOnUse" x1="-170.212" y1="656.925" x2="-170.212" y2="666.925" gradientTransform="matrix(1.167657, 0, 0, 0.87813, 0, 0)" xlink:href="#gradient-99"/>
       <linearGradient id="gradient-99">
-        <title>Dark3</title>
         <stop style="stop-color: rgb(60, 42, 216);" offset="0"/>
         <stop style="stop-color: rgb(13, 20, 131);" offset="1"/>
       </linearGradient>
