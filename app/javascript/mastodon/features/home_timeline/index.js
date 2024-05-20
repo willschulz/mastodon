@@ -17,7 +17,7 @@ import NotSignedInIndicator from 'mastodon/components/not_signed_in_indicator';
 import { Helmet } from 'react-helmet';
 
 const messages = defineMessages({
-  title: { id: 'column.home', defaultMessage: 'Hardcoded' },
+  title: { id: 'column.home', defaultMessage: 'Home' },
   show_announcements: { id: 'home.show_announcements', defaultMessage: 'Show announcements' },
   hide_announcements: { id: 'home.hide_announcements', defaultMessage: 'Hide announcements' },
 });
