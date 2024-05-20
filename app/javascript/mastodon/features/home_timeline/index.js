@@ -166,8 +166,7 @@ class HomeTimeline extends React.PureComponent {
         ) : <NotSignedInIndicator />}
 
         <Helmet>
-          <!--<title>{intl.formatMessage(messages.title)}</title>-->
-          <title>"Test Title"</title>
+          <title>{intl.formatMessage(messages.title)}</title>
           <meta name='robots' content='noindex' />
         </Helmet>
       </Column>
