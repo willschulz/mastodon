@@ -17,7 +17,7 @@ import NotSignedInIndicator from 'mastodon/components/not_signed_in_indicator';
 import { Helmet } from 'react-helmet';
 
 const messages = defineMessages({
-  title: { id: 'column.home', defaultMessage: 'Home' },
+  title: { id: 'column.home', defaultMessage: 'Hardcoded' },
   show_announcements: { id: 'home.show_announcements', defaultMessage: 'Show announcements' },
   hide_announcements: { id: 'home.hide_announcements', defaultMessage: 'Hide announcements' },
 });
@@ -166,8 +166,7 @@ class HomeTimeline extends React.PureComponent {
         ) : <NotSignedInIndicator />}
 
         <Helmet>
-          <!--<title>{intl.formatMessage(messages.title)}</title>-->
-          <title>{intl.formatMessage("Hardcoded")}</title>
+          <title>{intl.formatMessage(messages.title)}</title>
           <meta name='robots' content='noindex' />
         </Helmet>
       </Column>
