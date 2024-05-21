@@ -4,10 +4,10 @@
   <symbol id="logo-symbol-wordmark">
     <g style="transform-origin: 42.2815px 30.3653px;" transform="matrix(0, -2.027412, 3.469915, 0, 14.251863, 2.634686)">
       <g transform="matrix(0.707107, 0.707107, -0.707107, 0.707107, -42.718349, -74.634865)" style="transform-origin: 85px 105px;">
-        <rect x="74.643" y="94.643" width="10" height="10" style="fill: url('#gradient-0-9');"/>
-        <rect x="85.61" y="94.39" width="10" height="10" style="fill: url('#gradient-0-10');"/>
-        <rect x="74.39" y="105.61" width="10" height="10" style="fill: url('#gradient-0-11');"/>
-        <rect x="85.357" y="105.357" width="10" height="10" style="fill: url('#gradient-0-12');"/>
+        <rect x="74.643" y="94.643" width="10" height="10" fill="url('#gradient-0-9')"/>
+        <rect x="85.61" y="94.39" width="10" height="10" fill="url('#gradient-0-10')"/>
+        <rect x="74.39" y="105.61" width="10" height="10" fill="url('#gradient-0-11')"/>
+        <rect x="85.357" y="105.357" width="10" height="10" fill="url('#gradient-0-12')"/>
         <line fill="#c9c9cf" stroke="#c9c9cf" stroke-width="0.25px" stroke-linecap="round" x1="90.374" y1="92.285" x2="90.361" y2="118.412"/>
         <line fill="#c9c9cf" stroke="#c9c9cf" stroke-width="0.25px" stroke-linecap="round" transform-box="fill-box" transform-origin="50% 50%" x1="79.658" y1="91.628" x2="79.645" y2="117.755"/>
         <line fill="#c9c9cf" stroke="#c9c9cf" stroke-width="0.25px" stroke-linecap="round" transform-origin="104.712px 91.739px" x1="97.71" y1="99.647" x2="71.583" y2="99.66"/>
