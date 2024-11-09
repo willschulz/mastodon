@@ -53,12 +53,10 @@ module Paginable
     }
 
     #testing
-    scope :paginate_by_created_at, ->(limit, max_id = nil, since_id = nil) {
-      Rails.logger.info "paginate_by_created_at scope called"
-      #recency_with_favourites = Arel.sql("EXTRACT(EPOCH FROM now() - created_at) - (status_stats.favourites_count * 3600)") #this might have broken something
-      query = joins(:status_stat)
-      #query = query.reorder(StatusStat.arel_table[:favourites_count]).limit(limit) #this worked, though it seemed to have a limited chronological window within which it drew off posts and ordered them (could not load more posts afterwards)
-      query = query.reorder(arel_table[:created_at].desc).limit(limit) #trying .desc
+    scope :paginate_by_ext, ->(limit, max_id = nil, since_id = nil) {
+      Rails.logger.info "paginate_by_ext scope called"
+      query = joins(:status_stat) #this join no longer necessary if ranking based on external table
+      query = query.reorder(arel_table[:created_at].desc).limit(limit)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
       #Rails.logger.info "paginate_by_created_at result IDs: #{query.limit(5).pluck(:id).inspect}"
@@ -110,7 +108,7 @@ module Paginable
       if options[:min_id].present?
         paginate_by_min_id(limit, options[:min_id], options[:max_id]).reverse
       else
-        paginate_by_created_at(limit, options[:max_id], options[:since_id]).to_a
+        paginate_by_ext(limit, options[:max_id], options[:since_id]).to_a
       end
     end
   end
