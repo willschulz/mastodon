@@ -63,7 +63,7 @@ module Paginable
       end
     end
 
-    def self.testing_recency(limit, options = {})
+    def self.testing_ext_db_conn(limit, options = {})
       if options[:min_id].present?
         paginate_by_min_id(limit, options[:min_id], options[:max_id]).reverse
       else
