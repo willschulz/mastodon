@@ -27,32 +27,7 @@ module Paginable
       query
     }
 
-    #my first attempt:
-    scope :paginate_by_max_id_fav, ->(limit, max_id = nil, since_id = nil) {
-      Rails.logger.info "paginate_by_max_id_fav scope called"
-      query = joins(:status_stat)
-              .reorder((Arel::Nodes::Multiplication.new(StatusStat.arel_table[:favourites_count], 100000000000) + Arel::Nodes::BitwiseShiftRight.new(arel_table[:id],22)).desc) #good but bitshift not working as intended
-              .limit(20)
-      query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
-      query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-      query = query
-      query
-    }
-
-    #gpt suggestion that broke public feed, either because bad code or because favs not cached.  going to walk back and try to make working reverse-chrono from created_at...
-    scope :ordered_by_fav_adjusted_recency, -> {
-      Rails.logger.info "paginate_by_fav_adjusted_recency scope called"
-      age_in_seconds = Arel::Nodes::NamedFunction.new('EXTRACT', [
-        Arel.sql('EPOCH FROM NOW() - created_at')
-      ])
-      fav_adjustment = StatusStat.arel_table[:favourites_count].mul(3600)
-      weighted_age = Arel::Nodes::Subtraction.new(age_in_seconds, fav_adjustment)
-
-      query = joins(:status_stat).order(weighted_age.asc)
-      query
-    }
-
-    #testing
+    #New scope that connects to external table
     scope :paginate_by_ext, ->(limit, max_id = nil, since_id = nil) {
       Rails.logger.info "paginate_by_ext scope called"
       query = joins(:status_stat) #this join no longer necessary if ranking based on external table
@@ -61,7 +36,7 @@ module Paginable
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
       #Rails.logger.info "paginate_by_created_at result IDs: #{query.limit(5).pluck(:id).inspect}"
       #Rails.logger.info "paginate_by_created_at result textss: #{query.limit(5).pluck(:text).inspect}"
-      client = Mysql2::Client.new(
+      client = Mysql2::Client.new(#these credentials will need to be added to .env.production programmatically when creating new instances
         host: ENV['EXT_DB_HOST'],
         username: ENV['EXT_DB_USERNAME'],
         password: ENV['EXT_DB_PASSWORD'],
