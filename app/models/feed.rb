@@ -27,7 +27,7 @@ class Feed
     #Rails.logger.info "EXTERNAL IDs: #{result.limit(5).pluck(:id).inspect}"
     #Rails.logger.info "EXTERNAL texts: #{result.limit(5).pluck(:nchar_score).inspect}"
     result.each do |row|
-      Rails.logger.info "external algo_status_scores row: #{row.inspect}"
+      Rails.logger.info "external scores in feed.rb row: #{row.inspect}"
     end
     from_redis(limit, max_id, since_id, min_id)
   end
