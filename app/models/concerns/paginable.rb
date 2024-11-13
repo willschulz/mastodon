@@ -35,7 +35,7 @@ module Paginable
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
       #Rails.logger.info "paginate_by_created_at result IDs: #{query.limit(5).pluck(:id).inspect}"
-      #Rails.logger.info "paginate_by_created_at result textss: #{query.limit(5).pluck(:text).inspect}"
+      Rails.logger.info "mastodon internal texts: #{query.limit(5).pluck(:text).inspect}"
       client = Mysql2::Client.new(#these credentials will need to be added to .env.production programmatically when creating new instances
         host: ENV['EXT_DB_HOST'],
         username: ENV['EXT_DB_USERNAME'],
@@ -48,7 +48,7 @@ module Paginable
       #Rails.logger.info "EXTERNAL IDs: #{result.limit(5).pluck(:id).inspect}"
       #Rails.logger.info "EXTERNAL texts: #{result.limit(5).pluck(:nchar_score).inspect}"
       result.each do |row|
-        Rails.logger.info "algo_status_scores row: #{row.inspect}"
+        Rails.logger.info "external algo_status_scores row: #{row.inspect}"
       end
       #Rails.logger.info "DB_HOST is set to: #{ENV['EXT_DB_HOST']}"
       client.close
