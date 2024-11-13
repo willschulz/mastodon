@@ -30,8 +30,6 @@ module Paginable
     #New scope that connects to external table
     scope :paginate_by_ext, ->(limit, max_id = nil, since_id = nil) {
       Rails.logger.info "paginate_by_ext scope called"
-      #query = joins(:status_stat) #this join no longer necessary if ranking based on external table
-      #query = query.reorder(arel_table[:created_at].desc).limit(limit)
       query = order(arel_table[:id].desc).limit(limit)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
