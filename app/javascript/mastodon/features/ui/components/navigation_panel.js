@@ -15,9 +15,9 @@ import NavigationPortal from 'mastodon/components/navigation_portal';
 const messages = defineMessages({
   home: { id: 'tabs_bar.home', defaultMessage: 'Home' },
   notifications: { id: 'tabs_bar.notifications', defaultMessage: 'Notifications' },
-  //explore: { id: 'explore.title', defaultMessage: 'Explore' },
-  //local: { id: 'tabs_bar.local_timeline', defaultMessage: 'Local' },
-  //federated: { id: 'tabs_bar.federated_timeline', defaultMessage: 'Federated' },
+  explore: { id: 'explore.title', defaultMessage: 'Explore' },
+  local: { id: 'tabs_bar.local_timeline', defaultMessage: 'Local' },
+  federated: { id: 'tabs_bar.federated_timeline', defaultMessage: 'Federated' },
   //direct: { id: 'navigation_bar.direct', defaultMessage: 'Direct messages' },
   favourites: { id: 'navigation_bar.favourites', defaultMessage: 'Likes' },
   //bookmarks: { id: 'navigation_bar.bookmarks', defaultMessage: 'Bookmarks' },
@@ -57,6 +57,19 @@ class NavigationPanel extends React.Component {
             <ColumnLink transparent to='/notifications' icon={<NotificationsCounterIcon className='column-link__icon' />} text={intl.formatMessage(messages.notifications)} />
             <FollowRequestsColumnLink />
           </React.Fragment>
+        )}
+
+        {showTrends ? (
+          <ColumnLink transparent to='/explore' icon='hashtag' text={intl.formatMessage(messages.explore)} />
+        ) : (
+          <ColumnLink transparent to='/search' icon='search' text={intl.formatMessage(messages.search)} />
+        )}
+
+        {(signedIn || timelinePreview) && (
+          <>
+            <ColumnLink transparent to='/public/local' icon='users' text={intl.formatMessage(messages.local)} />
+            <ColumnLink transparent exact to='/public' icon='globe' text={intl.formatMessage(messages.federated)} />
+          </>
         )}
 
         {!signedIn && (
