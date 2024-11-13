@@ -13,6 +13,7 @@ class Feed
     max_id   = max_id.to_i if max_id.present?
     since_id = since_id.to_i if since_id.present?
     min_id   = min_id.to_i if min_id.present?
+    Rails.logger.info "HELLO WORLD!!!!"
 
     from_redis(limit, max_id, since_id, min_id)
   end
