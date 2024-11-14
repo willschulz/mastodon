@@ -14,21 +14,23 @@ class Feed
     max_id   = max_id.to_i if max_id.present?
     since_id = since_id.to_i if since_id.present?
     min_id   = min_id.to_i if min_id.present?
-    Rails.logger.info "HELLO WORLD!!!!"
-    client = Mysql2::Client.new(#these credentials will need to be added to .env.production programmatically when creating new instances
-        host: ENV['EXT_DB_HOST'],
-        username: ENV['EXT_DB_USERNAME'],
-        password: ENV['EXT_DB_PASSWORD'],
-        database: ENV['EXT_DB_DATABASE'],
-        port: ENV['EXT_DB_PORT']
-    )
-    # Execute a query to get data from `algo_status_scores`
-    result = client.query("SELECT * FROM algo_status_scores LIMIT 5")
-    #Rails.logger.info "EXTERNAL IDs: #{result.limit(5).pluck(:id).inspect}"
-    #Rails.logger.info "EXTERNAL texts: #{result.limit(5).pluck(:nchar_score).inspect}"
-    result.each do |row|
-      Rails.logger.info "external scores in feed.rb row: #{row.inspect}"
-    end
+    # Rails.logger.info "HELLO WORLD!!!!"
+    # client = Mysql2::Client.new(#these credentials will need to be added to .env.production programmatically when creating new instances
+    #     host: ENV['EXT_DB_HOST'],
+    #     username: ENV['EXT_DB_USERNAME'],
+    #     password: ENV['EXT_DB_PASSWORD'],
+    #     database: ENV['EXT_DB_DATABASE'],
+    #     port: ENV['EXT_DB_PORT']
+    # )
+    # # Execute a query to get data from `algo_status_scores`
+    # result = client.query("SELECT * FROM algo_status_scores LIMIT 5")
+    # #Rails.logger.info "EXTERNAL IDs: #{result.limit(5).pluck(:id).inspect}"
+    # #Rails.logger.info "EXTERNAL texts: #{result.limit(5).pluck(:nchar_score).inspect}"
+    # # log the current time
+    # Rails.logger.info "Current time: #{Time.now}"
+    # result.each do |row|
+    #   Rails.logger.info "external scores in feed.rb row: #{row.inspect}"
+    # end
     from_redis(limit, max_id, since_id, min_id)
   end
 
