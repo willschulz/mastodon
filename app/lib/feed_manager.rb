@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'singleton'
+require 'mysql2'
 
 class FeedManager
   include Singleton
@@ -509,6 +510,38 @@ class FeedManager
     true
   end
 
+  # This is a version that sources the rank from an external table
+  def add_to_feed(timeline_type, account_id, status, aggregate_reblogs: true)
+    client = Mysql2::Client.new(#these credentials will need to be added to .env.production programmatically when creating new instances
+    host: ENV['EXT_DB_HOST'],
+    username: ENV['EXT_DB_USERNAME'],
+    password: ENV['EXT_DB_PASSWORD'],
+    database: ENV['EXT_DB_DATABASE'],
+    port: ENV['EXT_DB_PORT']
+    )
+    # Execute a query to get data from `algo_status_scores` where the status_id is the same as the status.id
+    result = client.query("SELECT * FROM algo_status_scores WHERE id = #{status.id}")
+    #log information about the result, and it's structure, for debugging purposes
+    Rails.logger.info "EXTERNAL IDs: #{result.inspect}"
+    timeline_key = key(timeline_type, account_id)
+    reblog_key   = key(timeline_type, account_id, 'reblogs')
+    if status.reblog? && (aggregate_reblogs.nil? || aggregate_reblogs)
+      rank = redis.zrevrank(timeline_key, status.reblog_of_id)
+      return false if !rank.nil? && rank < FeedManager::REBLOG_FALLOFF
+      # log a random number
+      #Rails.logger.info "RANDOM NUMBER: #{rand}"
+      if redis.zadd(reblog_key, status.id, status.reblog_of_id, nx: true)
+        redis.zadd(timeline_key, rand, status.id) # Assign a random score
+      else
+        reblog_set_key = key(timeline_type, account_id, "reblogs:#{status.reblog_of_id}")
+        redis.sadd(reblog_set_key, status.id)
+        return false
+      end
+    else
+      redis.zadd(timeline_key, rand, status.id) # Assign a random score
+    end
+    true
+  end
 
   # Removes an individual status from a feed, correctly handling cases
   # with reblogs, and returning true if a status was removed. As with
