@@ -439,75 +439,75 @@ class FeedManager
     receiver_id == status.account_id || ((crutches[:active_mentions][status.id] || []) + [status.account_id]).any? { |target_account_id| crutches[:blocking][target_account_id] || crutches[:muting][target_account_id] } || crutches[:blocked_by][status.account_id] || crutches[:domain_blocking][status.account.domain]
   end
 
-  # Adds a status to an account's feed, returning true if a status was
-  # added, and false if it was not added to the feed. Note that this is
-  # an internal helper: callers must call trim or push updates if
-  # either action is appropriate.
-  # @param [Symbol] timeline_type
-  # @param [Integer] account_id
-  # @param [Status] status
-  # @param [Boolean] aggregate_reblogs
-  # @return [Boolean]
-  def add_to_feed(timeline_type, account_id, status, aggregate_reblogs: true)
-    timeline_key = key(timeline_type, account_id)
-    reblog_key   = key(timeline_type, account_id, 'reblogs')
-
-    if status.reblog? && (aggregate_reblogs.nil? || aggregate_reblogs)
-      # If the original status or a reblog of it is within
-      # REBLOG_FALLOFF statuses from the top, do not re-insert it into
-      # the feed
-      rank = redis.zrevrank(timeline_key, status.reblog_of_id)
-
-      return false if !rank.nil? && rank < FeedManager::REBLOG_FALLOFF
-
-      # The ordered set at `reblog_key` holds statuses which have a reblog
-      # in the top `REBLOG_FALLOFF` statuses of the timeline
-      if redis.zadd(reblog_key, status.id, status.reblog_of_id, nx: true)
-        # This is not something we've already seen reblogged, so we
-        # can just add it to the feed (and note that we're reblogging it).
-        redis.zadd(timeline_key, status.id, status.id)
-      else
-        # Another reblog of the same status was already in the
-        # REBLOG_FALLOFF most recent statuses, so we note that this
-        # is an "extra" reblog, by storing it in reblog_set_key.
-        reblog_set_key = key(timeline_type, account_id, "reblogs:#{status.reblog_of_id}")
-        redis.sadd(reblog_set_key, status.id)
-        return false
-      end
-    else
-      # A reblog may reach earlier than the original status because of the
-      # delay of the worker delivering the original status, the late addition
-      # by merging timelines, and other reasons.
-      # If such a reblog already exists, just do not re-insert it into the feed.
-      return false unless redis.zscore(reblog_key, status.id).nil?
-
-      redis.zadd(timeline_key, status.id, status.id)
-    end
-
-    true
-  end
-
-  #this is the modified version of the add_to_feed method that generates a random rank
+  # # Adds a status to an account's feed, returning true if a status was
+  # # added, and false if it was not added to the feed. Note that this is
+  # # an internal helper: callers must call trim or push updates if
+  # # either action is appropriate.
+  # # @param [Symbol] timeline_type
+  # # @param [Integer] account_id
+  # # @param [Status] status
+  # # @param [Boolean] aggregate_reblogs
+  # # @return [Boolean]
   # def add_to_feed(timeline_type, account_id, status, aggregate_reblogs: true)
   #   timeline_key = key(timeline_type, account_id)
   #   reblog_key   = key(timeline_type, account_id, 'reblogs')
+
   #   if status.reblog? && (aggregate_reblogs.nil? || aggregate_reblogs)
+  #     # If the original status or a reblog of it is within
+  #     # REBLOG_FALLOFF statuses from the top, do not re-insert it into
+  #     # the feed
   #     rank = redis.zrevrank(timeline_key, status.reblog_of_id)
+
   #     return false if !rank.nil? && rank < FeedManager::REBLOG_FALLOFF
-  #     # log a random number
-  #     #Rails.logger.info "RANDOM NUMBER: #{rand}"
+
+  #     # The ordered set at `reblog_key` holds statuses which have a reblog
+  #     # in the top `REBLOG_FALLOFF` statuses of the timeline
   #     if redis.zadd(reblog_key, status.id, status.reblog_of_id, nx: true)
-  #       redis.zadd(timeline_key, rand, status.id) # Assign a random score
+  #       # This is not something we've already seen reblogged, so we
+  #       # can just add it to the feed (and note that we're reblogging it).
+  #       redis.zadd(timeline_key, status.id, status.id)
   #     else
+  #       # Another reblog of the same status was already in the
+  #       # REBLOG_FALLOFF most recent statuses, so we note that this
+  #       # is an "extra" reblog, by storing it in reblog_set_key.
   #       reblog_set_key = key(timeline_type, account_id, "reblogs:#{status.reblog_of_id}")
   #       redis.sadd(reblog_set_key, status.id)
   #       return false
   #     end
   #   else
-  #     redis.zadd(timeline_key, rand, status.id) # Assign a random score
+  #     # A reblog may reach earlier than the original status because of the
+  #     # delay of the worker delivering the original status, the late addition
+  #     # by merging timelines, and other reasons.
+  #     # If such a reblog already exists, just do not re-insert it into the feed.
+  #     return false unless redis.zscore(reblog_key, status.id).nil?
+
+  #     redis.zadd(timeline_key, status.id, status.id)
   #   end
+
   #   true
   # end
+
+  #this is the modified version of the add_to_feed method that generates a random rank
+  def add_to_feed(timeline_type, account_id, status, aggregate_reblogs: true)
+    timeline_key = key(timeline_type, account_id)
+    reblog_key   = key(timeline_type, account_id, 'reblogs')
+    if status.reblog? && (aggregate_reblogs.nil? || aggregate_reblogs)
+      rank = redis.zrevrank(timeline_key, status.reblog_of_id)
+      return false if !rank.nil? && rank < FeedManager::REBLOG_FALLOFF
+      # log a random number
+      #Rails.logger.info "RANDOM NUMBER: #{rand}"
+      if redis.zadd(reblog_key, status.id, status.reblog_of_id, nx: true)
+        redis.zadd(timeline_key, rand, status.id) # Assign a random score
+      else
+        reblog_set_key = key(timeline_type, account_id, "reblogs:#{status.reblog_of_id}")
+        redis.sadd(reblog_set_key, status.id)
+        return false
+      end
+    else
+      redis.zadd(timeline_key, rand, status.id) # Assign a random score
+    end
+    true
+  end
 
 
   # Removes an individual status from a feed, correctly handling cases
