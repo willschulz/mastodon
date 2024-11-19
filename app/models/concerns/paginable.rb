@@ -29,12 +29,12 @@ module Paginable
 
     #New scope that connects to external table
     scope :paginate_by_ext, ->(limit, max_id = nil, since_id = nil) {
-      Rails.logger.info "paginate_by_ext scope called"
+      #Rails.logger.info "paginate_by_ext scope called"
       query = order(arel_table[:id].desc).limit(limit)
       query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
       query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
       #Rails.logger.info "paginate_by_created_at result IDs: #{query.limit(5).pluck(:id).inspect}"
-      Rails.logger.info "mastodon internal texts: #{query.limit(5).pluck(:text).inspect}"
+      #Rails.logger.info "mastodon internal texts: #{query.limit(5).pluck(:text).inspect}"
       client = Mysql2::Client.new(#these credentials will need to be added to .env.production programmatically when creating new instances
         host: ENV['EXT_DB_HOST'],
         username: ENV['EXT_DB_USERNAME'],

@@ -238,7 +238,10 @@ class FeedManager
     aggregate    = account.user&.aggregates_reblogs?
     timeline_key = key(:home, account.id)
 
+    Rails.logger.info "Populating home feed for account #{account.id} with limit #{limit}"
+
     account.statuses.limit(limit).each do |status|
+      Rails.logger.info "Adding status #{status.id} to home feed for account #{account.id}"
       add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
     end
 
@@ -246,6 +249,8 @@ class FeedManager
       if redis.zcard(timeline_key) >= limit
         oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
         last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
+
+        Rails.logger.info "Checking if target account #{target_account.id} has posted more recently than the last item on the feed"
 
         # If the feed is full and this account has not posted more recently
         # than the last item on the feed, then we can skip the whole account
@@ -257,11 +262,16 @@ class FeedManager
       crutches = build_crutches(account.id, statuses)
 
       statuses.each do |status|
-        next if filter_from_home?(status, account.id, crutches)
+        if filter_from_home?(status, account.id, crutches)
+          Rails.logger.info "Filtering out status #{status.id} from target account #{target_account.id} for account #{account.id}"
+          next
+        end
 
+        Rails.logger.info "Adding status #{status.id} from target account #{target_account.id} to home feed for account #{account.id}"
         add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
       end
 
+      Rails.logger.info "Trimming home feed for account #{account.id}"
       trim(:home, account.id)
     end
   end
@@ -476,6 +486,29 @@ class FeedManager
 
     true
   end
+
+  #this is the modified version of the add_to_feed method that generates a random rank
+  # def add_to_feed(timeline_type, account_id, status, aggregate_reblogs: true)
+  #   timeline_key = key(timeline_type, account_id)
+  #   reblog_key   = key(timeline_type, account_id, 'reblogs')
+  #   if status.reblog? && (aggregate_reblogs.nil? || aggregate_reblogs)
+  #     rank = redis.zrevrank(timeline_key, status.reblog_of_id)
+  #     return false if !rank.nil? && rank < FeedManager::REBLOG_FALLOFF
+  #     # log a random number
+  #     #Rails.logger.info "RANDOM NUMBER: #{rand}"
+  #     if redis.zadd(reblog_key, status.id, status.reblog_of_id, nx: true)
+  #       redis.zadd(timeline_key, rand, status.id) # Assign a random score
+  #     else
+  #       reblog_set_key = key(timeline_type, account_id, "reblogs:#{status.reblog_of_id}")
+  #       redis.sadd(reblog_set_key, status.id)
+  #       return false
+  #     end
+  #   else
+  #     redis.zadd(timeline_key, rand, status.id) # Assign a random score
+  #   end
+  #   true
+  # end
+
 
   # Removes an individual status from a feed, correctly handling cases
   # with reblogs, and returning true if a status was removed. As with
