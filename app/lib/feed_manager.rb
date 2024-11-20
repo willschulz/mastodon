@@ -523,7 +523,7 @@ class FeedManager
     Rails.logger.info "HELLO WORLD!!!!"
     # Execute a query to get data from `algo_status_scores` where the status_id is the same as the status.id
     result = client.query("SELECT * FROM algo_status_scores WHERE id = #{status.id}")
-    Rails.logger.info "EXTERNAL IDs: #{result.limit(1).pluck(:id).inspect}"
+    Rails.logger.info "EXTERNAL IDs test: #{result.limit(1).pluck(:id).inspect}"
     timeline_key = key(timeline_type, account_id)
     reblog_key   = key(timeline_type, account_id, 'reblogs')
     if status.reblog? && (aggregate_reblogs.nil? || aggregate_reblogs)
