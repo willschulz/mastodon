@@ -522,6 +522,7 @@ class FeedManager
     #test message
     Rails.logger.info "add_to_feed HELLO WORLD!!!!"
     # Execute a query to get data from `algo_status_scores` where the status_id is the same as the status.id
+    Rails.logger.info "status.id returns: #{status.id}"
     result = client.query("SELECT * FROM algo_status_scores WHERE id = #{status.id}")
     Rails.logger.info "EXTERNAL IDs test: #{result.limit(1).pluck(:id).inspect}"
     timeline_key = key(timeline_type, account_id)
