@@ -512,15 +512,15 @@ class FeedManager
 
   # This is a version that sources the rank from an external table
   def add_to_feed(timeline_type, account_id, status, aggregate_reblogs: true)
-    client = Mysql2::Client.new(#these credentials will need to be added to .env.production programmatically when creating new instances
-    host: ENV['EXT_DB_HOST'],
-    username: ENV['EXT_DB_USERNAME'],
-    password: ENV['EXT_DB_PASSWORD'],
-    database: ENV['EXT_DB_DATABASE'],
-    port: ENV['EXT_DB_PORT']
+    client = Mysql2::Client.new(
+      host: ENV['EXT_DB_HOST'],
+      username: ENV['EXT_DB_USERNAME'],
+      password: ENV['EXT_DB_PASSWORD'],
+      database: ENV['EXT_DB_DATABASE'],
+      port: ENV['EXT_DB_PORT']
     )
     #test message
-    Rails.logger.info "HELLO WORLD!!!!"
+    Rails.logger.info "add_to_feed HELLO WORLD!!!!"
     # Execute a query to get data from `algo_status_scores` where the status_id is the same as the status.id
     result = client.query("SELECT * FROM algo_status_scores WHERE id = #{status.id}")
     Rails.logger.info "EXTERNAL IDs test: #{result.limit(1).pluck(:id).inspect}"
@@ -542,6 +542,8 @@ class FeedManager
       redis.zadd(timeline_key, rand, status.id) # Assign a random score
     end
     true
+  ensure
+    client.close if client
   end
 
   # Removes an individual status from a feed, correctly handling cases
