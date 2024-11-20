@@ -520,9 +520,8 @@ class FeedManager
     port: ENV['EXT_DB_PORT']
     )
     # Execute a query to get data from `algo_status_scores` where the status_id is the same as the status.id
-    result = client.query("SELECT * FROM algo_status_scores WHERE id = #{status.id}")
-    #log information about the result, and it's structure, for debugging purposes
-    #Rails.logger.info "EXTERNAL IDs: #{result.inspect}"
+    result = client.query("SELECT positive_sentiment_rev_chron FROM algo_status_scores WHERE id = #{status.id}")
+    #log information about the result (which should only be one entry from the table), and it's structure, for debugging purposes
     Rails.logger.info "EXTERNAL IDs: #{result.limit(5).pluck(:id).inspect}"
     timeline_key = key(timeline_type, account_id)
     reblog_key   = key(timeline_type, account_id, 'reblogs')
