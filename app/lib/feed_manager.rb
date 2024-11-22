@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'singleton'
+# test
 
 class FeedManager
   include Singleton
@@ -266,6 +267,20 @@ class FeedManager
     end
   end
 
+  # Populate home feed of account from scratch
+  # @param [Account] account
+  # @return [void]
+  def populate_home(account)
+    limit        = FeedManager::MAX_ITEMS / 2
+    timeline_key = key(:home, account.id)
+
+    # statuses = AlgoStatusScores.get_positive_sentiment_rev_chrono(limit)
+
+    # statuses.each do |status|
+    #   add_to_feed_custom(:home, account.id, status.id, status.positive_sentiment_rev_chrono)
+    # end
+  end
+
   # Completely clear multiple feeds at once
   # @param [Symbol] type
   # @param [Array<Integer>] ids
@@ -476,6 +491,13 @@ class FeedManager
 
     true
   end
+
+  def add_to_feed_custom(timeline_type, account_id, status_id, rank)
+    timeline_key = key(timeline_type, account_id)
+
+    redis.zadd(timeline_key, status_id, rank)
+
+    true
 
   # Removes an individual status from a feed, correctly handling cases
   # with reblogs, and returning true if a status was removed. As with

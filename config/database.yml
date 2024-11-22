@@ -6,12 +6,24 @@ default: &default
   sslmode: <%= ENV['DB_SSLMODE'] || "prefer" %>
 
 development:
+  # primary:
   <<: *default
   database: <%= ENV['DB_NAME'] || 'mastodon_development' %>
   username: <%= ENV['DB_USER'] %>
   password: <%= (ENV['DB_PASS'] || '').to_json %>
   host: <%= ENV['DB_HOST'] %>
   port: <%= ENV['DB_PORT'] %>
+  # ext:
+  #   database: ****
+  #   username: ****
+  #   password: ********
+  #   host: *****
+  #   port: ******
+    # adapter: postgresql
+    # pool: <%= ENV["DB_POOL"] || ENV['MAX_THREADS'] || 5 %>
+    # timeout: 5000
+    # encoding: unicode
+  #   sslmode: REQUIRED
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
