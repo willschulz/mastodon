@@ -231,54 +231,55 @@ class FeedManager
     end
   end
 
+  # # Populate home feed of account from scratch
+  # # @param [Account] account
+  # # @return [void]
+  # def populate_home(account)
+  #   limit        = FeedManager::MAX_ITEMS / 2
+  #   aggregate    = account.user&.aggregates_reblogs?
+  #   timeline_key = key(:home, account.id)
+
+  #   account.statuses.limit(limit).each do |status|
+  #     add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
+  #   end
+
+  #   account.following.includes(:account_stat).find_each do |target_account|
+  #     if redis.zcard(timeline_key) >= limit
+  #       oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
+  #       last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
+
+  #       # If the feed is full and this account has not posted more recently
+  #       # than the last item on the feed, then we can skip the whole account
+  #       # because none of its statuses would stay on the feed anyway
+  #       next if last_status_score < oldest_home_score
+  #     end
+
+  #     statuses = target_account.statuses.where(visibility: [:public, :unlisted, :private]).includes(:preloadable_poll, :media_attachments, :account, reblog: :account).limit(limit)
+  #     crutches = build_crutches(account.id, statuses)
+
+  #     statuses.each do |status|
+  #       next if filter_from_home?(status, account.id, crutches)
+
+  #       add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
+  #     end
+
+  #     trim(:home, account.id)
+  #   end
+  # end
+
   # Populate home feed of account from scratch
   # @param [Account] account
   # @return [void]
   def populate_home(account)
     limit        = FeedManager::MAX_ITEMS / 2
-    aggregate    = account.user&.aggregates_reblogs?
     timeline_key = key(:home, account.id)
 
-    account.statuses.limit(limit).each do |status|
-      add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
+    statuses = AlgoStatusScores.get_positive_sentiment_rev_chrono(limit)
+    add_to_feed_custom(:home, account.id, 1, 1)
+
+    statuses.each do |status|
+      add_to_feed_custom(:home, account.id, status.id, status.positive_sentiment_rev_chrono)
     end
-
-    account.following.includes(:account_stat).find_each do |target_account|
-      if redis.zcard(timeline_key) >= limit
-        oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
-        last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
-
-        # If the feed is full and this account has not posted more recently
-        # than the last item on the feed, then we can skip the whole account
-        # because none of its statuses would stay on the feed anyway
-        next if last_status_score < oldest_home_score
-      end
-
-      statuses = target_account.statuses.where(visibility: [:public, :unlisted, :private]).includes(:preloadable_poll, :media_attachments, :account, reblog: :account).limit(limit)
-      crutches = build_crutches(account.id, statuses)
-
-      statuses.each do |status|
-        next if filter_from_home?(status, account.id, crutches)
-
-        add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
-      end
-
-      trim(:home, account.id)
-    end
-  end
-
-  # Populate home feed of account from scratch
-  # @param [Account] account
-  # @return [void]
-  def populate_home(account)
-    limit        = FeedManager::MAX_ITEMS / 2
-    timeline_key = key(:home, account.id)
-
-    # statuses = AlgoStatusScores.get_positive_sentiment_rev_chrono(limit)
-
-    # statuses.each do |status|
-    #   add_to_feed_custom(:home, account.id, status.id, status.positive_sentiment_rev_chrono)
-    # end
   end
 
   # Completely clear multiple feeds at once
@@ -494,10 +495,9 @@ class FeedManager
 
   def add_to_feed_custom(timeline_type, account_id, status_id, rank)
     timeline_key = key(timeline_type, account_id)
-
-    redis.zadd(timeline_key, status_id, rank)
-
+    redis.zadd(timeline_key, rank, status_id)
     true
+  end
 
   # Removes an individual status from a feed, correctly handling cases
   # with reblogs, and returning true if a status was removed. As with

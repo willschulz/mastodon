@@ -8,7 +8,7 @@
 class AlgoStatusScores < ExtRecord
     self.table_name = 'algo_status_scores'
     
-    def self.get_positive_sentiment_rev_chrono(limit)
+    def get_positive_sentiment_rev_chrono(limit)
         AlgoStatusScores.where('positive_sentiment_rev_chrono > 0').order(positive_sentiment_rev_chrono: :desc).limit(limit)
     end
     
