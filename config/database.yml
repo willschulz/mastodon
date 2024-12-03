@@ -12,8 +12,6 @@ development:
   password: <%= (ENV['DB_PASS'] || '').to_json %>
   host: <%= ENV['DB_HOST'] %>
   port: <%= ENV['DB_PORT'] %>
-
-
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
@@ -35,9 +33,13 @@ production:
     port: <%= ENV['DB_PORT'] || 5432 %>
     prepared_statements: <%= ENV['PREPARED_STATEMENTS'] || 'true' %>
   ext:
-    <<: *default
+    adapter: mysql2
+    encoding: utf8mb4
+    pool: 5
+    sslmode: require
     database: <%= ENV['EXT_DB_DATABASE'] || 'defaultdb' %>
     username: <%= ENV['EXT_DB_USERNAME'] || 'doadmin_leg' %>
     password: <%= (ENV['EXT_DB_PASSWORD'] || '').to_json %>
     host: <%= ENV['EXT_DB_HOST'] || 'db-mysql-nyc1-06729-do-user-13224616-0.b.db.ondigitalocean.com' %>
     port: <%= ENV['EXT_DB_PORT'] || 25060 %>
+    sslca: /var/www/mastodon/ca-certificate.crt

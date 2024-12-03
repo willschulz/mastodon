@@ -27,33 +27,33 @@ module Paginable
       query
     }
 
-    #New scope that connects to external table
-    scope :paginate_by_ext, ->(limit, max_id = nil, since_id = nil) {
-      Rails.logger.info "paginate_by_ext scope called"
-      query = joins(:status_stat) #this join no longer necessary if ranking based on external table
-      query = query.reorder(arel_table[:created_at].desc).limit(limit)
-      query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
-      query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
-      #Rails.logger.info "paginate_by_created_at result IDs: #{query.limit(5).pluck(:id).inspect}"
-      #Rails.logger.info "paginate_by_created_at result textss: #{query.limit(5).pluck(:text).inspect}"
-      client = Mysql2::Client.new(#these credentials will need to be added to .env.production programmatically when creating new instances
-        host: ENV['EXT_DB_HOST'],
-        username: ENV['EXT_DB_USERNAME'],
-        password: ENV['EXT_DB_PASSWORD'],
-        database: ENV['EXT_DB_DATABASE'],
-        port: ENV['EXT_DB_PORT']
-      )
-      # Execute a query to get data from `algo_status_scores`
-      result = client.query("SELECT * FROM algo_status_scores LIMIT 5")
-      #Rails.logger.info "EXTERNAL IDs: #{result.limit(5).pluck(:id).inspect}"
-      #Rails.logger.info "EXTERNAL texts: #{result.limit(5).pluck(:nchar_score).inspect}"
-      result.each do |row|
-        Rails.logger.info "algo_status_scores row: #{row.inspect}"
-      end
-      #Rails.logger.info "DB_HOST is set to: #{ENV['EXT_DB_HOST']}"
-      client.close
-      query
-    }
+    # #New scope that connects to external table
+    # scope :paginate_by_ext, ->(limit, max_id = nil, since_id = nil) {
+    #   Rails.logger.info "paginate_by_ext scope called"
+    #   query = joins(:status_stat) #this join no longer necessary if ranking based on external table
+    #   query = query.reorder(arel_table[:created_at].desc).limit(limit)
+    #   query = query.where(arel_table[:id].lt(max_id)) if max_id.present?
+    #   query = query.where(arel_table[:id].gt(since_id)) if since_id.present?
+    #   #Rails.logger.info "paginate_by_created_at result IDs: #{query.limit(5).pluck(:id).inspect}"
+    #   #Rails.logger.info "paginate_by_created_at result textss: #{query.limit(5).pluck(:text).inspect}"
+    #   client = Mysql2::Client.new(#these credentials will need to be added to .env.production programmatically when creating new instances
+    #     host: ENV['EXT_DB_HOST'],
+    #     username: ENV['EXT_DB_USERNAME'],
+    #     password: ENV['EXT_DB_PASSWORD'],
+    #     database: ENV['EXT_DB_DATABASE'],
+    #     port: ENV['EXT_DB_PORT']
+    #   )
+    #   # Execute a query to get data from `algo_status_scores`
+    #   result = client.query("SELECT * FROM algo_status_scores LIMIT 5")
+    #   #Rails.logger.info "EXTERNAL IDs: #{result.limit(5).pluck(:id).inspect}"
+    #   #Rails.logger.info "EXTERNAL texts: #{result.limit(5).pluck(:nchar_score).inspect}"
+    #   result.each do |row|
+    #     Rails.logger.info "algo_status_scores row: #{row.inspect}"
+    #   end
+    #   #Rails.logger.info "DB_HOST is set to: #{ENV['EXT_DB_HOST']}"
+    #   client.close
+    #   query
+    # }
 
     def self.to_a_paginated_by_id(limit, options = {})
       if options[:min_id].present?

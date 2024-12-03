@@ -273,9 +273,8 @@ class FeedManager
   def populate_home(account)
     limit        = FeedManager::MAX_ITEMS / 2
     timeline_key = key(:home, account.id)
-
-    statuses = AlgoStatusScores.get_positive_sentiment_rev_chrono(limit)
-    add_to_feed_custom(:home, account.id, 1, 1)
+    
+    statuses = AlgoStatusScores.get_positive_sentiment_rev_chrono(10)
 
     statuses.each do |status|
       add_to_feed_custom(:home, account.id, status.id, status.positive_sentiment_rev_chrono)
