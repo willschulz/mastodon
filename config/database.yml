@@ -42,4 +42,3 @@ production:
     password: <%= (ENV['EXT_DB_PASSWORD'] || '').to_json %>
     host: <%= ENV['EXT_DB_HOST'] || 'db-mysql-nyc1-06729-do-user-13224616-0.b.db.ondigitalocean.com' %>
     port: <%= ENV['EXT_DB_PORT'] || 25060 %>
-    sslca: /var/www/mastodon/ca-certificate.crt
