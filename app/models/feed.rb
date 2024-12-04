@@ -27,13 +27,8 @@ class Feed
     else
       unhydrated = redis.zrangebyscore(key, "(#{min_id}", "(#{max_id}", limit: [0, limit], with_scores: true).map(&:first).map(&:to_i)
     end
-    Rails.logger.info("from_redis unhydrated #{unhydrated}")
-    unhydrated = redis.zrevrangebyscore(key, '+inf', '-inf', limit: [0, limit], with_scores: true).map(&:first).map(&:to_i)
 
-    Status.where(id: unhydrated)
-      .index_by(&:id)
-      .values_at(*unhydrated)
-      .compact
+    Status.where(id: unhydrated).cache_ids
   end
 
   def key
