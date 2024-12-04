@@ -24,11 +24,14 @@ class Api::V1::StatusesController < Api::BaseController
   DESCENDANTS_DEPTH_LIMIT = 20
 
   def show
+    cache_if_unauthenticated!
     @status = cache_collection([@status], Status).first
     render json: @status, serializer: REST::StatusSerializer
   end
 
   def context
+    cache_if_unauthenticated!
+
     ancestors_limit         = CONTEXT_LIMIT
     descendants_limit       = CONTEXT_LIMIT
     descendants_depth_limit = nil
@@ -63,11 +66,14 @@ class Api::V1::StatusesController < Api::BaseController
       scheduled_at: status_params[:scheduled_at],
       application: doorkeeper_token.application,
       poll: status_params[:poll],
+      allowed_mentions: status_params[:allowed_mentions],
       idempotency: request.headers['Idempotency-Key'],
       with_rate_limit: true
     )
 
-    render json: @status, serializer: @status.is_a?(ScheduledStatus) ? REST::ScheduledStatusSerializer : REST::StatusSerializer
+    render json: @status, serializer: serializer_for_status
+  rescue PostStatusService::UnexpectedMentionsError => e
+    render json: unexpected_accounts_error_json(e), status: 422
   end
 
   def update
@@ -79,6 +85,7 @@ class Api::V1::StatusesController < Api::BaseController
       current_account.id,
       text: status_params[:status],
       media_ids: status_params[:media_ids],
+      media_attributes: status_params[:media_attributes],
       sensitive: status_params[:sensitive],
       language: status_params[:language],
       spoiler_text: status_params[:spoiler_text],
@@ -127,7 +134,14 @@ class Api::V1::StatusesController < Api::BaseController
       :visibility,
       :language,
       :scheduled_at,
+      allowed_mentions: [],
       media_ids: [],
+      media_attributes: [
+        :id,
+        :thumbnail,
+        :description,
+        :focus,
+      ],
       poll: [
         :multiple,
         :hide_totals,
@@ -135,6 +149,21 @@ class Api::V1::StatusesController < Api::BaseController
         options: [],
       ]
     )
+  end
+
+  def serializer_for_status
+    @status.is_a?(ScheduledStatus) ? REST::ScheduledStatusSerializer : REST::StatusSerializer
+  end
+
+  def unexpected_accounts_error_json(error)
+    {
+      error: error.message,
+      unexpected_accounts: serialized_accounts(error.accounts),
+    }
+  end
+
+  def serialized_accounts(accounts)
+    ActiveModel::Serializer::CollectionSerializer.new(accounts, serializer: REST::AccountSerializer)
   end
 
   def pagination_params(core_params)

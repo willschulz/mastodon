@@ -9,6 +9,8 @@ module ProfileStories
       email: email, password: password, confirmed_at: confirmed_at,
       account: Fabricate(:account, username: 'bob')
     )
+
+    Web::Setting.where(user: bob).first_or_initialize(user: bob).update!(data: { introductionVersion: 2018_12_16_044202 }) if finished_onboarding
   end
 
   def as_a_logged_in_user
@@ -19,9 +21,15 @@ module ProfileStories
     click_on I18n.t('auth.login')
   end
 
+  def as_a_logged_in_admin
+    # This is a bit awkward, but this avoids code duplication.
+    as_a_logged_in_user
+    bob.update!(role: UserRole.find_by!(name: 'Admin'))
+  end
+
   def with_alice_as_local_user
-    @alice_bio = '@alice and @bob are fictional characters commonly used as'\
-                 'placeholder names in #cryptology, as well as #science and'\
+    @alice_bio = '@alice and @bob are fictional characters commonly used as' \
+                 'placeholder names in #cryptology, as well as #science and' \
                  'engineering 📖 literature. Not affiliated with @pepe.'
 
     @alice = Fabricate(
@@ -41,5 +49,9 @@ module ProfileStories
 
   def password
     @password ||= 'password'
+  end
+
+  def finished_onboarding
+    @finished_onboarding || false
   end
 end

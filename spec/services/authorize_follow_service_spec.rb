@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe AuthorizeFollowService, type: :service do
-  let(:sender) { Fabricate(:account, username: 'alice') }
+RSpec.describe AuthorizeFollowService do
+  subject { described_class.new }
 
-  subject { AuthorizeFollowService.new }
+  let(:sender) { Fabricate(:account, username: 'alice') }
 
   describe 'local' do
     let(:bob) { Fabricate(:account, username: 'bob') }
@@ -39,7 +41,7 @@ RSpec.describe AuthorizeFollowService, type: :service do
       expect(bob.following?(sender)).to be true
     end
 
-    it 'sends an accept activity' do
+    it 'sends an accept activity', :sidekiq_inline do
       expect(a_request(:post, bob.inbox_url)).to have_been_made.once
     end
   end

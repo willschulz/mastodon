@@ -16,19 +16,6 @@ class Api::V1::Admin::DomainAllowsController < Api::BaseController
 
   PAGINATION_PARAMS = %i(limit).freeze
 
-  def create
-    authorize :domain_allow, :create?
-
-    @domain_allow = DomainAllow.find_by(resource_params)
-
-    if @domain_allow.nil?
-      @domain_allow = DomainAllow.create!(resource_params)
-      log_action :create, @domain_allow
-    end
-
-    render json: @domain_allow, serializer: REST::Admin::DomainAllowSerializer
-  end
-
   def index
     authorize :domain_allow, :index?
     render json: @domain_allows, each_serializer: REST::Admin::DomainAllowSerializer
@@ -36,6 +23,19 @@ class Api::V1::Admin::DomainAllowsController < Api::BaseController
 
   def show
     authorize @domain_allow, :show?
+    render json: @domain_allow, serializer: REST::Admin::DomainAllowSerializer
+  end
+
+  def create
+    authorize :domain_allow, :create?
+
+    @domain_allow = DomainAllow.find_by(domain: resource_params[:domain])
+
+    if @domain_allow.nil?
+      @domain_allow = DomainAllow.create!(resource_params)
+      log_action :create, @domain_allow
+    end
+
     render json: @domain_allow, serializer: REST::Admin::DomainAllowSerializer
   end
 
@@ -61,10 +61,6 @@ class Api::V1::Admin::DomainAllowsController < Api::BaseController
     DomainAllow.all
   end
 
-  def insert_pagination_headers
-    set_pagination_headers(next_path, prev_path)
-  end
-
   def next_path
     api_v1_admin_domain_allows_url(pagination_params(max_id: pagination_max_id)) if records_continue?
   end
@@ -73,12 +69,8 @@ class Api::V1::Admin::DomainAllowsController < Api::BaseController
     api_v1_admin_domain_allows_url(pagination_params(min_id: pagination_since_id)) unless @domain_allows.empty?
   end
 
-  def pagination_max_id
-    @domain_allows.last.id
-  end
-
-  def pagination_since_id
-    @domain_allows.first.id
+  def pagination_collection
+    @domain_allows
   end
 
   def records_continue?

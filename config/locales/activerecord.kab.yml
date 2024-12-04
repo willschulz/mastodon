@@ -19,9 +19,13 @@ kab:
         account:
           attributes:
             username:
-              invalid: isekkilen, uṭṭunen d yijerriden n wadda kan
+              invalid: ilaq ad ilin isekkilen, uṭṭunen d yijerriden n wadda kan
               reserved: yettwaṭṭef
         status:
           attributes:
             reblog:
               taken: n iddaden yellan yakan
+        user:
+          attributes:
+            email:
+              unreachable: ur d-ttban ara d akken yella

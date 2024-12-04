@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: account_moderation_notes
@@ -12,10 +13,12 @@
 #
 
 class AccountModerationNote < ApplicationRecord
+  CONTENT_SIZE_LIMIT = 500
+
   belongs_to :account
   belongs_to :target_account, class_name: 'Account'
 
   scope :latest, -> { reorder('created_at DESC') }
 
-  validates :content, presence: true, length: { maximum: 500 }
+  validates :content, presence: true, length: { maximum: CONTENT_SIZE_LIMIT }
 end

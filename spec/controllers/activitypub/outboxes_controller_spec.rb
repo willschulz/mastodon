@@ -1,23 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe ActivityPub::OutboxesController, type: :controller do
+RSpec.describe ActivityPub::OutboxesController do
   let!(:account) { Fabricate(:account) }
-
-  shared_examples 'cacheable response' do
-    it 'does not set cookies' do
-      expect(response.cookies).to be_empty
-      expect(response.headers['Set-Cookies']).to be nil
-    end
-
-    it 'does not set sessions' do
-      response
-      expect(session).to be_empty
-    end
-
-    it 'returns public Cache-Control header' do
-      expect(response.headers['Cache-Control']).to include 'public'
-    end
-  end
 
   before do
     Fabricate(:status, account: account, visibility: :public)
@@ -25,18 +11,16 @@ RSpec.describe ActivityPub::OutboxesController, type: :controller do
     Fabricate(:status, account: account, visibility: :private)
     Fabricate(:status, account: account, visibility: :direct)
     Fabricate(:status, account: account, visibility: :limited)
-  end
 
-  before do
     allow(controller).to receive(:signed_request_actor).and_return(remote_account)
   end
 
   describe 'GET #show' do
     context 'without signature' do
-      let(:remote_account) { nil }
-
       subject(:response) { get :show, params: { account_username: account.username, page: page } }
-      subject(:body) { body_as_json }
+
+      let(:body) { body_as_json }
+      let(:remote_account) { nil }
 
       context 'with page not requested' do
         let(:page) { nil }
@@ -95,7 +79,7 @@ RSpec.describe ActivityPub::OutboxesController, type: :controller do
         it 'returns orderedItems with public or unlisted statuses' do
           expect(body[:orderedItems]).to be_an Array
           expect(body[:orderedItems].size).to eq 2
-          expect(body[:orderedItems].all? { |item| item[:to].include?(ActivityPub::TagManager::COLLECTIONS[:public]) || item[:cc].include?(ActivityPub::TagManager::COLLECTIONS[:public]) }).to be true
+          expect(body[:orderedItems].all? { |item| targets_public_collection?(item) }).to be true
         end
 
         it_behaves_like 'cacheable response'
@@ -148,7 +132,7 @@ RSpec.describe ActivityPub::OutboxesController, type: :controller do
           json = body_as_json
           expect(json[:orderedItems]).to be_an Array
           expect(json[:orderedItems].size).to eq 2
-          expect(json[:orderedItems].all? { |item| item[:to].include?(ActivityPub::TagManager::COLLECTIONS[:public]) || item[:cc].include?(ActivityPub::TagManager::COLLECTIONS[:public]) }).to be true
+          expect(json[:orderedItems].all? { |item| targets_public_collection?(item) }).to be true
         end
 
         it 'returns private Cache-Control header' do
@@ -174,7 +158,7 @@ RSpec.describe ActivityPub::OutboxesController, type: :controller do
           json = body_as_json
           expect(json[:orderedItems]).to be_an Array
           expect(json[:orderedItems].size).to eq 3
-          expect(json[:orderedItems].all? { |item| item[:to].include?(ActivityPub::TagManager::COLLECTIONS[:public]) || item[:cc].include?(ActivityPub::TagManager::COLLECTIONS[:public]) || item[:to].include?(account_followers_url(account, ActionMailer::Base.default_url_options)) }).to be true
+          expect(json[:orderedItems].all? { |item| targets_public_collection?(item) || targets_followers_collection?(item, account) }).to be true
         end
 
         it 'returns private Cache-Control header' do
@@ -232,5 +216,21 @@ RSpec.describe ActivityPub::OutboxesController, type: :controller do
         end
       end
     end
+  end
+
+  private
+
+  def ap_public_collection
+    ActivityPub::TagManager::COLLECTIONS[:public]
+  end
+
+  def targets_public_collection?(item)
+    item[:to].include?(ap_public_collection) || item[:cc].include?(ap_public_collection)
+  end
+
+  def targets_followers_collection?(item, account)
+    item[:to].include?(
+      account_followers_url(account, ActionMailer::Base.default_url_options)
+    )
   end
 end

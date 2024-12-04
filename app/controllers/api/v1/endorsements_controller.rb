@@ -25,35 +25,23 @@ class Api::V1::EndorsementsController < Api::BaseController
   end
 
   def endorsed_accounts
-    current_account.endorsed_accounts.includes(:account_stat).without_suspended
-  end
-
-  def insert_pagination_headers
-    set_pagination_headers(next_path, prev_path)
+    current_account.endorsed_accounts.includes(:account_stat, :user).without_suspended
   end
 
   def next_path
     return if unlimited?
 
-    if records_continue?
-      api_v1_endorsements_url pagination_params(max_id: pagination_max_id)
-    end
+    api_v1_endorsements_url pagination_params(max_id: pagination_max_id) if records_continue?
   end
 
   def prev_path
     return if unlimited?
 
-    unless @accounts.empty?
-      api_v1_endorsements_url pagination_params(since_id: pagination_since_id)
-    end
+    api_v1_endorsements_url pagination_params(since_id: pagination_since_id) unless @accounts.empty?
   end
 
-  def pagination_max_id
-    @accounts.last.id
-  end
-
-  def pagination_since_id
-    @accounts.first.id
+  def pagination_collection
+    @accounts
   end
 
   def records_continue?

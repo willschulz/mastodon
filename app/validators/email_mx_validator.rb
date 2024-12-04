@@ -8,7 +8,7 @@ class EmailMxValidator < ActiveModel::Validator
 
     domain = get_domain(user.email)
 
-    if domain.blank?
+    if domain.blank? || domain.include?('..')
       user.errors.add(:email, :invalid)
     elsif !on_allowlist?(domain)
       resolved_ips, resolved_domains = resolve_mx(domain)
@@ -47,6 +47,7 @@ class EmailMxValidator < ActiveModel::Validator
       dns.timeouts = 5
 
       records = dns.getresources(domain, Resolv::DNS::Resource::IN::MX).to_a.map { |e| e.exchange.to_s }
+      next if records == [''] # This domain explicitly rejects emails
 
       ([domain] + records).uniq.each do |hostname|
         ips.concat(dns.getresources(hostname, Resolv::DNS::Resource::IN::A).to_a.map { |e| e.address.to_s })

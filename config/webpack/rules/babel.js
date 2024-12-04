@@ -1,13 +1,20 @@
 const { join, resolve } = require('path');
+
 const { env, settings } = require('../configuration');
 
 module.exports = {
-  test: /\.(js|jsx|mjs)$/,
+  test: /\.(js|jsx|mjs|ts|tsx)$/,
   include: [
     settings.source_path,
     ...settings.resolved_paths,
+    'node_modules/@reduxjs'
   ].map(p => resolve(p)),
-  exclude: /node_modules/,
+  exclude: function(modulePath) {
+    return (
+      /node_modules/.test(modulePath) &&
+      !/@reduxjs/.test(modulePath)
+    );
+  },
   use: [
     {
       loader: 'babel-loader',

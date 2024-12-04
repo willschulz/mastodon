@@ -13,7 +13,7 @@ describe Oauth::AuthorizedApplicationsController do
     shared_examples 'stores location for user' do
       it 'stores location for user' do
         subject
-        expect(controller.stored_location_for(:user)).to eq "/oauth/authorized_applications"
+        expect(controller.stored_location_for(:user)).to eq '/oauth/authorized_applications'
       end
     end
 
@@ -25,6 +25,11 @@ describe Oauth::AuthorizedApplicationsController do
       it 'returns http success' do
         subject
         expect(response).to have_http_status(200)
+      end
+
+      it 'returns private cache control headers' do
+        subject
+        expect(response.headers['Cache-Control']).to include('private, no-store')
       end
 
       include_examples 'stores location for user'
@@ -57,6 +62,10 @@ describe Oauth::AuthorizedApplicationsController do
 
     it 'removes subscriptions for the application\'s access tokens' do
       expect(Web::PushSubscription.where(user: user).count).to eq 0
+    end
+
+    it 'removes the web_push_subscription' do
+      expect { web_push_subscription.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end

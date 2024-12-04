@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-describe AccountStatusesCleanupService, type: :service do
+describe AccountStatusesCleanupService do
   let(:account)           { Fabricate(:account, username: 'alice', domain: nil) }
   let(:account_policy)    { Fabricate(:account_statuses_cleanup_policy, account: account) }
   let!(:unrelated_status) { Fabricate(:status, created_at: 3.years.ago) }
@@ -18,13 +20,13 @@ describe AccountStatusesCleanupService, type: :service do
       let!(:another_old_status) { Fabricate(:status, created_at: 1.year.ago, account: account) }
       let!(:recent_status)      { Fabricate(:status, created_at: 1.day.ago, account: account) }
 
-      context 'given a budget of 1' do
+      context 'when given a budget of 1' do
         it 'reports 1 deleted toot' do
           expect(subject.call(account_policy, 1)).to eq 1
         end
       end
 
-      context 'given a normal budget of 10' do
+      context 'when given a normal budget of 10' do
         it 'reports 3 deleted statuses' do
           expect(subject.call(account_policy, 10)).to eq 3
         end
@@ -37,13 +39,20 @@ describe AccountStatusesCleanupService, type: :service do
         it 'actually deletes the statuses' do
           subject.call(account_policy, 10)
           expect(Status.find_by(id: [very_old_status.id, old_status.id, another_old_status.id])).to be_nil
+          expect { recent_status.reload }.to_not raise_error
+        end
+
+        it 'preserves recent and unrelated statuses' do
+          subject.call(account_policy, 10)
+          expect { unrelated_status.reload }.to_not raise_error
+          expect { recent_status.reload }.to_not raise_error
         end
       end
 
       context 'when called repeatedly with a budget of 2' do
         it 'reports 2 then 1 deleted statuses' do
-         expect(subject.call(account_policy, 2)).to eq 2
-         expect(subject.call(account_policy, 2)).to eq 1
+          expect(subject.call(account_policy, 2)).to eq 2
+          expect(subject.call(account_policy, 2)).to eq 1
         end
 
         it 'actually deletes the statuses in the expected order' do

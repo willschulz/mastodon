@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: polls
@@ -26,7 +27,11 @@ class Poll < ApplicationRecord
   belongs_to :status
 
   has_many :votes, class_name: 'PollVote', inverse_of: :poll, dependent: :delete_all
-  has_many :voters, -> { group('accounts.id') }, through: :votes, class_name: 'Account', source: :account
+
+  with_options class_name: 'Account', source: :account, through: :votes do
+    has_many :voters, -> { group('accounts.id') }
+    has_many :local_voters, -> { group('accounts.id').merge(Account.local) }
+  end
 
   has_many :notifications, as: :activity, dependent: :destroy
 
@@ -52,7 +57,7 @@ class Poll < ApplicationRecord
   end
 
   def voted?(account)
-    account.id == account_id || votes.where(account: account).exists?
+    account.id == account_id || votes.exists?(account: account)
   end
 
   def own_votes(account)
@@ -74,9 +79,9 @@ class Poll < ApplicationRecord
 
     def initialize(poll, id, title, votes_count)
       super(
-        poll:        poll,
-        id:          id,
-        title:       title,
+        poll: poll,
+        id: id,
+        title: title,
         votes_count: votes_count,
       )
     end
@@ -85,6 +90,7 @@ class Poll < ApplicationRecord
   def reset_votes!
     self.cached_tallies = options.map { 0 }
     self.votes_count = 0
+    self.voters_count = 0
     votes.delete_all unless new_record?
   end
 
@@ -99,12 +105,13 @@ class Poll < ApplicationRecord
   end
 
   def prepare_options
-    self.options = options.map(&:strip).reject(&:blank?)
+    self.options = options.map(&:strip).compact_blank
   end
 
   def reset_parent_cache
     return if status_id.nil?
-    Rails.cache.delete("statuses/#{status_id}")
+
+    Rails.cache.delete("v3:statuses/#{status_id}")
   end
 
   def last_fetched_before_expiration?

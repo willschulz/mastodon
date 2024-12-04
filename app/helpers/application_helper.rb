@@ -28,18 +28,6 @@ module ApplicationHelper
     number_to_human(number, **options)
   end
 
-  def active_nav_class(*paths)
-    paths.any? { |path| current_page?(path) } ? 'active' : ''
-  end
-
-  def active_link_to(label, path, **options)
-    link_to label, path, options.merge(class: active_nav_class(path))
-  end
-
-  def show_landing_strip?
-    !user_signed_in? && !single_user_mode?
-  end
-
   def open_registrations?
     Setting.registrations_mode == 'open'
   end
@@ -56,7 +44,7 @@ module ApplicationHelper
     if closed_registrations? || omniauth_only?
       'https://joinmastodon.org/#getting-started'
     else
-      new_user_registration_path
+      ENV.fetch('SSO_ACCOUNT_SIGN_UP', new_user_registration_path)
     end
   end
 
@@ -67,7 +55,7 @@ module ApplicationHelper
   def link_to_login(name = nil, html_options = nil, &block)
     target = new_user_session_path
 
-    html_options = name if block_given?
+    html_options = name if block
 
     if omniauth_only? && Devise.mappings[:user].omniauthable? && User.omniauth_providers.size == 1
       target = omniauth_authorize_path(:user, User.omniauth_providers[0])
@@ -75,7 +63,7 @@ module ApplicationHelper
       html_options[:method] = :post
     end
 
-    if block_given?
+    if block
       link_to(target, html_options, &block)
     else
       link_to(name, target, html_options)
@@ -95,6 +83,14 @@ module ApplicationHelper
     end
   end
 
+  def html_title
+    safe_join(
+      [content_for(:page_title).to_s.chomp, title]
+      .select(&:present?),
+      ' - '
+    )
+  end
+
   def title
     Rails.env.production? ? site_title : "#{site_title} (Dev)"
   end
@@ -105,15 +101,28 @@ module ApplicationHelper
 
   def can?(action, record)
     return false if record.nil?
-    policy(record).public_send("#{action}?")
+
+    policy(record).public_send(:"#{action}?")
   end
 
   def fa_icon(icon, attributes = {})
-    class_names = attributes[:class]&.split(' ') || []
+    class_names = attributes[:class]&.split || []
     class_names << 'fa'
-    class_names += icon.split(' ').map { |cl| "fa-#{cl}" }
+    class_names += icon.split.map { |cl| "fa-#{cl}" }
 
     content_tag(:i, nil, attributes.merge(class: class_names.join(' ')))
+  end
+
+  def material_symbol(icon, attributes = {})
+    inline_svg_tag(
+      "400-24px/#{icon}.svg",
+      class: %w(icon).concat(attributes[:class].to_s.split),
+      role: :img
+    )
+  end
+
+  def check_icon
+    inline_svg_tag 'check.svg'
   end
 
   def visibility_icon(status)
@@ -142,33 +151,21 @@ module ApplicationHelper
     if prefers_autoplay?
       image_tag(custom_emoji.image.url, class: 'emojione', alt: ":#{custom_emoji.shortcode}:")
     else
-      image_tag(custom_emoji.image.url(:static), class: 'emojione custom-emoji', alt: ":#{custom_emoji.shortcode}", 'data-original' => full_asset_url(custom_emoji.image.url), 'data-static' => full_asset_url(custom_emoji.image.url(:static)))
+      image_tag(custom_emoji.image.url(:static), :class => 'emojione custom-emoji', :alt => ":#{custom_emoji.shortcode}", 'data-original' => full_asset_url(custom_emoji.image.url), 'data-static' => full_asset_url(custom_emoji.image.url(:static)))
     end
   end
 
   def opengraph(property, content)
-    tag(:meta, content: content, property: property)
-  end
-
-  def react_component(name, props = {}, &block)
-    if block.nil?
-      content_tag(:div, nil, data: { component: name.to_s.camelcase, props: Oj.dump(props) })
-    else
-      content_tag(:div, data: { component: name.to_s.camelcase, props: Oj.dump(props) }, &block)
-    end
-  end
-
-  def react_admin_component(name, props = {})
-    content_tag(:div, nil, data: { 'admin-component': name.to_s.camelcase, props: Oj.dump({ locale: I18n.locale }.merge(props)) })
+    tag.meta(content: content, property: property)
   end
 
   def body_classes
-    output = (@body_classes || '').split(' ')
+    output = body_class_string.split
     output << "theme-#{current_theme.parameterize}"
     output << 'system-font' if current_account&.user&.setting_system_font_ui
     output << (current_account&.user&.setting_reduce_motion ? 'reduce-motion' : 'no-reduce-motion')
     output << 'rtl' if locale_direction == 'rtl'
-    output.reject(&:blank?).join(' ')
+    output.compact_blank.join(' ')
   end
 
   def cdn_host
@@ -180,11 +177,11 @@ module ApplicationHelper
   end
 
   def storage_host
-    "https://#{ENV['S3_ALIAS_HOST'].presence || ENV['S3_CLOUDFRONT_HOST']}"
+    "https://#{storage_host_var}"
   end
 
   def storage_host?
-    ENV['S3_ALIAS_HOST'].present? || ENV['S3_CLOUDFRONT_HOST'].present?
+    storage_host_var.present?
   end
 
   def quote_wrap(text, line_width: 80, break_sequence: "\n")
@@ -216,9 +213,7 @@ module ApplicationHelper
       state_params[:moved_to_account] = current_account.moved_to_account
     end
 
-    if single_user_mode?
-      state_params[:owner] = Account.local.without_suspended.where('id > 0').first
-    end
+    state_params[:owner] = Account.local.without_suspended.without_internal.first if single_user_mode?
 
     json = ActiveModelSerializers::SerializableResource.new(InitialStatePresenter.new(state_params), serializer: InitialStateSerializer).to_json
     # rubocop:disable Rails/OutputSafety
@@ -243,5 +238,11 @@ module ApplicationHelper
 
   def prerender_custom_emojis(html, custom_emojis, other_options = {})
     EmojiFormatter.new(html, custom_emojis, other_options.merge(animate: prefers_autoplay?)).to_s
+  end
+
+  private
+
+  def storage_host_var
+    ENV.fetch('S3_ALIAS_HOST', nil) || ENV.fetch('S3_CLOUDFRONT_HOST', nil) || ENV.fetch('AZURE_ALIAS_HOST', nil)
   end
 end

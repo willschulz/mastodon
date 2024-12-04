@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe UpdateAccountService, type: :service do
-  subject { UpdateAccountService.new }
+RSpec.describe UpdateAccountService do
+  subject { described_class.new }
 
-  describe 'switching form locked to unlocked accounts' do
+  describe 'switching form locked to unlocked accounts', :sidekiq_inline do
     let(:account) { Fabricate(:account, locked: true) }
     let(:alice)   { Fabricate(:account) }
     let(:bob)     { Fabricate(:account) }

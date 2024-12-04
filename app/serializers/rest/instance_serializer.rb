@@ -28,7 +28,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
       }
     else
       {
-        url: full_pack_url('media/images/preview.png'),
+        url: frontend_asset_url('images/preview.png'),
       }
     end
   end
@@ -45,10 +45,16 @@ class REST::InstanceSerializer < ActiveModel::Serializer
     {
       urls: {
         streaming: Rails.configuration.x.streaming_api_base_url,
+        status: object.status_page_url,
+      },
+
+      vapid: {
+        public_key: Rails.configuration.x.vapid_public_key,
       },
 
       accounts: {
         max_featured_tags: FeaturedTag::LIMIT,
+        max_pinned_statuses: StatusPinValidator::PIN_LIMIT,
       },
 
       statuses: {
@@ -84,6 +90,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
       enabled: registrations_enabled?,
       approval_required: Setting.registrations_mode == 'approved',
       message: registrations_enabled? ? nil : registrations_message,
+      url: ENV.fetch('SSO_ACCOUNT_SIGN_UP', nil),
     }
   end
 
@@ -94,11 +101,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
   end
 
   def registrations_message
-    if Setting.closed_registrations_message.present?
-      markdown.render(Setting.closed_registrations_message)
-    else
-      nil
-    end
+    markdown.render(Setting.closed_registrations_message) if Setting.closed_registrations_message.present?
   end
 
   def markdown

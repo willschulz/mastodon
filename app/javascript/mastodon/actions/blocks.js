@@ -1,4 +1,5 @@
 import api, { getLinks } from '../api';
+
 import { fetchRelationships } from './accounts';
 import { importFetchedAccounts } from './importer';
 import { openModal } from './modal';
@@ -11,8 +12,6 @@ export const BLOCKS_EXPAND_REQUEST = 'BLOCKS_EXPAND_REQUEST';
 export const BLOCKS_EXPAND_SUCCESS = 'BLOCKS_EXPAND_SUCCESS';
 export const BLOCKS_EXPAND_FAIL    = 'BLOCKS_EXPAND_FAIL';
 
-export const BLOCKS_INIT_MODAL = 'BLOCKS_INIT_MODAL';
-
 export function fetchBlocks() {
   return (dispatch, getState) => {
     dispatch(fetchBlocksRequest());
@@ -24,13 +23,13 @@ export function fetchBlocks() {
       dispatch(fetchRelationships(response.data.map(item => item.id)));
     }).catch(error => dispatch(fetchBlocksFail(error)));
   };
-};
+}
 
 export function fetchBlocksRequest() {
   return {
     type: BLOCKS_FETCH_REQUEST,
   };
-};
+}
 
 export function fetchBlocksSuccess(accounts, next) {
   return {
@@ -38,14 +37,14 @@ export function fetchBlocksSuccess(accounts, next) {
     accounts,
     next,
   };
-};
+}
 
 export function fetchBlocksFail(error) {
   return {
     type: BLOCKS_FETCH_FAIL,
     error,
   };
-};
+}
 
 export function expandBlocks() {
   return (dispatch, getState) => {
@@ -64,13 +63,13 @@ export function expandBlocks() {
       dispatch(fetchRelationships(response.data.map(item => item.id)));
     }).catch(error => dispatch(expandBlocksFail(error)));
   };
-};
+}
 
 export function expandBlocksRequest() {
   return {
     type: BLOCKS_EXPAND_REQUEST,
   };
-};
+}
 
 export function expandBlocksSuccess(accounts, next) {
   return {
@@ -78,22 +77,23 @@ export function expandBlocksSuccess(accounts, next) {
     accounts,
     next,
   };
-};
+}
 
 export function expandBlocksFail(error) {
   return {
     type: BLOCKS_EXPAND_FAIL,
     error,
   };
-};
+}
 
 export function initBlockModal(account) {
   return dispatch => {
-    dispatch({
-      type: BLOCKS_INIT_MODAL,
-      account,
-    });
-
-    dispatch(openModal('BLOCK'));
+    dispatch(openModal({
+      modalType: 'BLOCK',
+      modalProps: {
+        accountId: account.get('id'),
+        acct: account.get('acct'),
+      },
+    }));
   };
 }

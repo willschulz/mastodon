@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: report_notes
@@ -12,10 +13,12 @@
 #
 
 class ReportNote < ApplicationRecord
+  CONTENT_SIZE_LIMIT = 500
+
   belongs_to :account
   belongs_to :report, inverse_of: :notes, touch: true
 
   scope :latest, -> { reorder(created_at: :desc) }
 
-  validates :content, presence: true, length: { maximum: 500 }
+  validates :content, presence: true, length: { maximum: CONTENT_SIZE_LIMIT }
 end

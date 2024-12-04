@@ -1,0 +1,63 @@
+---
+ia:
+  devise:
+    confirmations:
+      confirmed: Tu conto de e-mail ha essite confirmate con successo.
+      send_instructions: Tu recipera un e-mail con instructiones pro confirmar tu adresse de e-mail in poc minutas. Per favor verifica tu dossier de spam si tu non lo recipe.
+      send_paranoid_instructions: Si tu adresse de e-mail existe in nostre base de datos, tu recipera un e-mail con instructiones pro confirmar tu adresse de e-mail in poc minutas. Per favor verifica tu dossier de spam si tu non lo recipe.
+    failure:
+      already_authenticated: Tu jam initiava le session.
+      inactive: Tu conto ancora non es activate.
+      invalid: "%{authentication_keys} o contrasigno non valide."
+      last_attempt: Tu ha solmente un altere tentativa ante que tu conto es serrate.
+      locked: Tu conto es blocate.
+      not_found_in_database: "%{authentication_keys} o contrasigno non valide."
+      omniauth_user_creation_failure: Error creante un conto pro iste identitate.
+      pending: Tu conto es ancora sub revision.
+      timeout: Tu session ha expirate. Per favor reaperi session pro continuar.
+      unauthenticated: Es necessari aperir session o crear un conto ante de continuar.
+    mailer:
+      confirmation_instructions:
+        action: Verificar adresse de e-mail
+        action_with_app: Confirmar e retornar a %{app}
+        title: Verificar adresse de e-mail
+      email_changed:
+        title: Nove adresse de e-mail
+      password_change:
+        subject: 'Mastodon: Contrasigno cambiate'
+        title: Contrasigno cambiate
+      reconfirmation_instructions:
+        explanation: Confirma le nove adresse pro cambiar tu email.
+        title: Verificar adresse de e-mail
+      reset_password_instructions:
+        action: Cambiar contrasigno
+        subject: 'Mastodon: Instructiones pro reinitialisar le contrasigno'
+        title: Reinitialisar contrasigno
+      two_factor_disabled:
+        title: 2FA disactivate
+      two_factor_enabled:
+        title: 2FA activate
+      unlock_instructions:
+        subject: 'Mastodon: Instructiones pro disblocar'
+      webauthn_credential:
+        added:
+          explanation: Le sequente clave de securitate esseva addite a tu conto
+          subject: 'Mastodon: Nove clave de securitate'
+          title: Un nove clave de securitate esseva addite
+        deleted:
+          explanation: Le sequente clave de securitate esseva delite de tu conto
+          subject: 'Mastodon: Clave de securitate delite'
+      webauthn_disabled:
+        title: Claves de securitate disactivate
+      webauthn_enabled:
+        title: Claves de securitate activate
+    registrations:
+      destroyed: A revider! Tu conto esseva cancellate con successo. Nos spera vider te novemente tosto.
+      signed_up_but_pending: Un message con un ligamine de confirmation esseva inviate a tu conto de email. Post que tu clicca le ligamine, nos revidera tu application. Tu essera notificate si illo es approbate.
+      updated: Tu conto ha essite actualisate con successo.
+    unlocks:
+      unlocked: Tu conto ha essite disblocate con successo. Initia session a continuar.
+  errors:
+    messages:
+      already_confirmed: jam esseva confirmate, tenta initiar session
+      not_found: non trovate
