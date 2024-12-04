@@ -501,7 +501,7 @@ class User < ApplicationRecord
 
   def regenerate_feed_override!
     Rails.logger.info "Regenerating feed for user #{account_id} due to override"
-    RegenerationWorkerPrio.perform(account_id)
+    RegenerationWorkerPrio.perform_async(account_id)
   end
 
   def needs_feed_update?
