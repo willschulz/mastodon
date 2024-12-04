@@ -407,6 +407,7 @@ GEM
     msgpack (1.5.4)
     multi_json (1.15.0)
     multipart-post (2.1.1)
+    mysql2 (0.5.6)
     net-ldap (0.17.1)
     net-scp (4.0.0.rc1)
       net-ssh (>= 2.6.5, < 8.0.0)
@@ -792,6 +793,7 @@ DEPENDENCIES
   memory_profiler
   microformats (~> 4.4)
   mime-types (~> 3.4.1)
+  mysql2 (~> 0.5)
   net-ldap (~> 0.17)
   nokogiri (~> 1.13)
   nsa (~> 0.2)
@@ -855,3 +857,9 @@ DEPENDENCIES
   webpacker (~> 5.4)
   webpush!
   xorcist (~> 1.1)
+
+RUBY VERSION
+   ruby 3.0.4p208
+
+BUNDLED WITH
+   2.2.33
