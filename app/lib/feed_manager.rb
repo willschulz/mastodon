@@ -230,6 +230,43 @@ class FeedManager
     end
   end
 
+  # # Populate home feed of account from scratch
+  # # @param [Account] account
+  # # @return [void]
+  # def populate_home(account)
+  #   limit        = FeedManager::MAX_ITEMS / 2
+  #   aggregate    = account.user&.aggregates_reblogs?
+  #   timeline_key = key(:home, account.id)
+
+  #   account.statuses.limit(limit).each do |status|
+  #     add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
+  #   end
+
+  #   account.following.includes(:account_stat).find_each do |target_account|
+  #     if redis.zcard(timeline_key) >= limit
+  #       oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
+  #       last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
+
+  #       # If the feed is full and this account has not posted more recently
+  #       # than the last item on the feed, then we can skip the whole account
+  #       # because none of its statuses would stay on the feed anyway
+  #       next if last_status_score < oldest_home_score
+  #     end
+
+  #     statuses = target_account.statuses.where(visibility: [:public, :unlisted, :private]).includes(:preloadable_poll, :media_attachments, :account, reblog: :account).limit(limit)
+  #     crutches = build_crutches(account.id, statuses)
+
+  #     statuses.each do |status|
+  #       next if filter_from_home?(status, account.id, crutches)
+
+  #       add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
+  #     end
+
+  #     trim(:home, account.id)
+  #   end
+  # end
+
+
   # Populate home feed of account from scratch
   # @param [Account] account
   # @return [void]
@@ -238,32 +275,18 @@ class FeedManager
     aggregate    = account.user&.aggregates_reblogs?
     timeline_key = key(:home, account.id)
 
-    account.statuses.limit(limit).each do |status|
-      add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
+    Rails.logger.info "Populating home feed for account #{account.id}"
+
+    best_statuses = AlgoStatusScores.get_positive_sentiment_rev_chron(limit)
+    best_statuses.each do |status|
+      Rails.logger.info "Adding status #{status.id} to home feed"
+      add_to_feed_with_score(:home, account.id, status, status.positive_sentiment_rev_chron)
     end
+  end
 
-    account.following.includes(:account_stat).find_each do |target_account|
-      if redis.zcard(timeline_key) >= limit
-        oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
-        last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
-
-        # If the feed is full and this account has not posted more recently
-        # than the last item on the feed, then we can skip the whole account
-        # because none of its statuses would stay on the feed anyway
-        next if last_status_score < oldest_home_score
-      end
-
-      statuses = target_account.statuses.where(visibility: [:public, :unlisted, :private]).includes(:preloadable_poll, :media_attachments, :account, reblog: :account).limit(limit)
-      crutches = build_crutches(account.id, statuses)
-
-      statuses.each do |status|
-        next if filter_from_home?(status, account.id, crutches)
-
-        add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
-      end
-
-      trim(:home, account.id)
-    end
+  def add_to_feed_with_score(timeline_type, account_id, status, score)
+    timeline_key = key(timeline_type, account_id)
+    redis.zadd(timeline_key, score, status.id)
   end
 
   # Completely clear multiple feeds at once
