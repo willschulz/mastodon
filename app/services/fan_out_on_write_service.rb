@@ -16,7 +16,7 @@ class FanOutOnWriteService < BaseService
     check_race_condition!
     warm_payload_cache!
 
-    fan_out_to_local_recipients!
+    fan_out_to_local_recipients! #this is where we should intervene
     fan_out_to_public_recipients! if broadcastable?
     fan_out_to_public_streams! if broadcastable?
   end
@@ -36,12 +36,12 @@ class FanOutOnWriteService < BaseService
   end
 
   def fan_out_to_local_recipients!
-    deliver_to_self!
-    notify_mentioned_accounts!
+    deliver_to_self! 
+    notify_mentioned_accounts! #notification events that shouldn't happen until post is scored and in feeds
     notify_about_update! if update?
 
     case @status.visibility.to_sym
-    when :public, :unlisted, :private
+    when :public, :unlisted, :private #if we want a "FYP", we'd need a broader type of "delivery" (could be computationally costly, but maybe do async?)
       deliver_to_all_followers!
       deliver_to_lists!
     when :limited
@@ -62,7 +62,7 @@ class FanOutOnWriteService < BaseService
   end
 
   def deliver_to_self!
-    FeedManager.instance.push_to_home(@account, @status, update: update?) if @account.local?
+    FeedManager.instance.push_to_home(@account, @status, update: update?) if @account.local? #this probably determines own feed cache, can investigate later according to how we want ranking to work in author's feed
   end
 
   def notify_mentioned_accounts!
@@ -83,7 +83,7 @@ class FanOutOnWriteService < BaseService
 
   def deliver_to_all_followers!
     @account.followers_for_local_distribution.select(:id).reorder(nil).find_in_batches do |followers|
-      FeedInsertWorker.push_bulk(followers) do |follower|
+      FeedInsertWorker.push_bulk(followers) do |follower| #can we add a score argument to push_bulk, or FeedInsertWorker to pass ddown cusotmized user scores
         [@status.id, follower.id, 'home', { 'update' => update? }]
       end
     end
@@ -113,14 +113,14 @@ class FanOutOnWriteService < BaseService
     end
   end
 
-  def broadcast_to_hashtag_streams!
+  def broadcast_to_hashtag_streams! #let's not worry about this for now
     @status.tags.map(&:name).each do |hashtag|
       redis.publish("timeline:hashtag:#{hashtag.mb_chars.downcase}", anonymous_payload)
       redis.publish("timeline:hashtag:#{hashtag.mb_chars.downcase}:local", anonymous_payload) if @status.local?
     end
   end
 
-  def broadcast_to_public_streams!
+  def broadcast_to_public_streams! #investigate relationship between this and the timeline-loading code we previously hacked for reranking
     return if @status.reply? && @status.in_reply_to_account_id != @account.id
 
     redis.publish('timeline:public', anonymous_payload)

@@ -277,10 +277,11 @@ class FeedManager
 
     Rails.logger.info "Populating home feed for account #{account.id}"
 
-    best_statuses = AlgoStatusScores.get_positive_sentiment_rev_chron(limit)
+    best_statuses = AlgoStatusScores.get_sentiment_rev_chron(limit)
+    Rails.logger.info "Best statuses: #{best_statuses}"
     best_statuses.each do |status|
       Rails.logger.info "Adding status #{status.id} to home feed"
-      add_to_feed_with_score(:home, account.id, status, status.positive_sentiment_rev_chron)
+      add_to_feed_with_score(:home, account.id, status, status.negative_sentiment_rev_chron)
     end
   end
 
