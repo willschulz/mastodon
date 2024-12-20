@@ -65,6 +65,8 @@ class FeedManager
     true
   end
 
+  #need to make a push_to_home_with_score that uses add_to_feed_with_score
+
   # Remove a status from a home feed and send a streaming API update
   # @param [Account] account
   # @param [Status] status
