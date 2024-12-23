@@ -1,4 +1,7 @@
 # frozen_string_literal: true
+require 'net/http'
+require 'uri'
+require 'json'
 
 class FanOutOnWriteService < BaseService
   include Redisable
@@ -17,6 +20,22 @@ class FanOutOnWriteService < BaseService
     warm_payload_cache!
 
     # we should send the status text to ext for content analysis here
+    Rails.logger.info "FanOutTest: Current status text is #{@status.inspect}"
+    # Define the URL and request data
+    url = URI.parse("http://192.81.218.82:3005/submit")
+    http = Net::HTTP.new(url.host, url.port)
+
+    # Prepare the request
+    request = Net::HTTP::Post.new(url.path, { 'Content-Type' => 'application/json' })
+    request.body = { text:@status.text, id: @status.id, created_at: @status.created_at }.to_json
+
+    # Send the request
+    response = http.request(request)
+
+    # Print the response
+    puts response.body
+
+    
     # then, feed_insert_worker goes and calculates the actual score for each status-user pair
 
     fan_out_to_local_recipients! #this is where we should intervene

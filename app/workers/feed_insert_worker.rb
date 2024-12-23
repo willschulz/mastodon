@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'net/http'
-require 'uri'
-require 'json'
+# require 'net/http'
+# require 'uri'
+# require 'json'
 
 
 class FeedInsertWorker
@@ -15,21 +15,21 @@ class FeedInsertWorker
 
     Rails.logger.info "Test log: FeedInsertWorker: status_id: #{status_id}, id: #{id}, type: #{type}, options: #{options}"
 
-    Rails.logger.info "Current status text is #{@status.text}"
+    #Rails.logger.info "Current status text is #{@status.text}"
 
-    # Define the URL and request data
-    url = URI.parse("http://192.81.218.82:3005/submit")
-    http = Net::HTTP.new(url.host, url.port)
+    # # Define the URL and request data
+    # url = URI.parse("http://192.81.218.82:3005/submit")
+    # http = Net::HTTP.new(url.host, url.port)
 
-    # Prepare the request
-    request = Net::HTTP::Post.new(url.path, { 'Content-Type' => 'application/json' })
-    request.body = { text:@status.text, id: @status.id }.to_json
+    # # Prepare the request
+    # request = Net::HTTP::Post.new(url.path, { 'Content-Type' => 'application/json' })
+    # request.body = { text:@status.text, id: @status.id }.to_json
 
-    # Send the request
-    response = http.request(request)
+    # # Send the request
+    # response = http.request(request)
 
-    # Print the response
-    puts response.body
+    # # Print the response
+    # puts response.body
 
     # looks like this runs for every person (id) who is relevant (follows, is mentioned, etc) to the status
     # so, we need to add a call to an api endpoint on the scoring machine to send the status text (and eventually also any media content) along with the relevant user id, and get back the appropriate score/rank for the status-user pair
