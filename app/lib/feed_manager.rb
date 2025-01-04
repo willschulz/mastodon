@@ -58,7 +58,32 @@ class FeedManager
   # @param [Boolean] update
   # @return [Boolean]
   def push_to_home(account, status, update: false)
-    return false unless add_to_feed(:home, account.id, status, aggregate_reblogs: account.user&.aggregates_reblogs?)
+    #return false unless add_to_feed(:home, account.id, status, aggregate_reblogs: account.user&.aggregates_reblogs?)
+
+    #code to get score:
+    Rails.logger.info "feed_manager test log: push_to_home canary"
+    Rails.logger.info "push_to_home canary account.id: #{account.id}, status.id: #{status.id}"
+
+    Rails.logger.info "push_to_home canary Current status text is #{status.text}"
+
+    # Define the URL and request data
+    url = URI.parse("http://192.81.218.82:3005/get-score")
+    http = Net::HTTP.new(url.host, url.port)
+
+    # Prepare the request
+    request = Net::HTTP::Get.new(url.path + "?status_id=#{status_id.to_s}&id=#{id.to_s}")
+
+    # Send the request
+    response = http.request(request)
+
+    # Print the response
+    puts response.body
+
+    # extract the score from the response
+    score = JSON.parse(response.body)["score"]
+    puts "Score (push_to_home canary) is #{score}"
+
+    return false unless add_to_feed_with_score(:home, account.id, status, score)
 
     trim(:home, account.id)
     PushUpdateWorker.perform_async(account.id, status.id, "timeline:#{account.id}", { 'update' => update }) if push_update_required?("timeline:#{account.id}")
@@ -287,11 +312,6 @@ class FeedManager
     end
   end
 
-  def add_to_feed_with_score(timeline_type, account_id, status, score)
-    timeline_key = key(timeline_type, account_id)
-    redis.zadd(timeline_key, score, status.id)
-  end
-
   # Completely clear multiple feeds at once
   # @param [Symbol] type
   # @param [Array<Integer>] ids
@@ -500,6 +520,12 @@ class FeedManager
       redis.zadd(timeline_key, status.id, status.id)
     end
 
+    true
+  end
+
+  def add_to_feed_with_score(timeline_type, account_id, status, score)
+    timeline_key = key(timeline_type, account_id)
+    redis.zadd(timeline_key, score, status.id)
     true
   end
 
