@@ -2,6 +2,11 @@
 
 require 'singleton'
 
+# for score api?
+require 'net/http'
+require 'uri'
+require 'json'
+
 class FeedManager
   include Singleton
   include Redisable
@@ -61,8 +66,11 @@ class FeedManager
     #return false unless add_to_feed(:home, account.id, status, aggregate_reblogs: account.user&.aggregates_reblogs?)
 
     #code to get score:
+    status_id = status.id
+    id = account.id
+
     Rails.logger.info "feed_manager test log: push_to_home canary"
-    Rails.logger.info "push_to_home canary account.id: #{account.id}, status.id: #{status.id}"
+    Rails.logger.info "push_to_home canary account.id: #{id}, status.id: #{status_id}"
 
     Rails.logger.info "push_to_home canary Current status text is #{status.text}"
 
@@ -71,17 +79,20 @@ class FeedManager
     http = Net::HTTP.new(url.host, url.port)
 
     # Prepare the request
-    request = Net::HTTP::Get.new(url.path + "?status_id=#{status_id.to_s}&id=#{id.to_s}")
+    request_text = url.path + "?status_id=#{status_id.to_s}&id=#{id.to_s}"
+    #log request_text
+    Rails.logger.info "push_to_home canary request_text is #{request_text}"
+    request = Net::HTTP::Get.new(request_text)
 
     # Send the request
     response = http.request(request)
 
     # Print the response
-    puts response.body
+    Rails.logger.info "push_to_home canary response.body is #{response.body}"
 
     # extract the score from the response
     score = JSON.parse(response.body)["score"]
-    puts "Score (push_to_home canary) is #{score}"
+    puts "push_to_home canary score is #{score}"
 
     return false unless add_to_feed_with_score(:home, account.id, status, score)
 
@@ -89,8 +100,6 @@ class FeedManager
     PushUpdateWorker.perform_async(account.id, status.id, "timeline:#{account.id}", { 'update' => update }) if push_update_required?("timeline:#{account.id}")
     true
   end
-
-  #need to make a push_to_home_with_score that uses add_to_feed_with_score
 
   # Remove a status from a home feed and send a streaming API update
   # @param [Account] account

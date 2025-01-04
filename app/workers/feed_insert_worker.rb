@@ -13,26 +13,28 @@ class FeedInsertWorker
     @status    = Status.find(status_id)
     @options   = options.symbolize_keys
 
-    #Rails.logger.info "Test log: FeedInsertWorker: status_id: #{status_id}, id: #{id}, type: #{type}, options: #{options}"
+    # #Rails.logger.info "Test log: FeedInsertWorker: status_id: #{status_id}, id: #{id}, type: #{type}, options: #{options}"
 
-    ##Rails.logger.info "Current status text is #{@status.text}"
+    # ##Rails.logger.info "Current status text is #{@status.text}"
 
-    # Define the URL and request data
-    url = URI.parse("http://192.81.218.82:3005/get-score")
-    http = Net::HTTP.new(url.host, url.port)
+    # # Define the URL and request data
+    # url = URI.parse("http://192.81.218.82:3005/get-score")
+    # http = Net::HTTP.new(url.host, url.port)
 
-    # Prepare the request
-    request = Net::HTTP::Get.new(url.path + "?status_id=#{status_id.to_s}&id=#{id.to_s}")
+    # # Prepare the request
+    # request_text = url.path + "?status_id=#{status_id.to_s}&id=#{id.to_s}"
+    # Rails.logger.info "FeedInsertWorker canary request_text is #{request_text}"
+    # request = Net::HTTP::Get.new(request_text)
 
-    # Send the request
-    response = http.request(request)
+    # # Send the request
+    # response = http.request(request)
 
-    # Print the response
-    puts response.body
+    # # Print the response
+    # puts response.body
 
-    # extract the score from the response
-    score = JSON.parse(response.body)["score"]
-    puts "Score is #{score}"
+    # # extract the score from the response
+    # score = JSON.parse(response.body)["score"]
+    # puts "FeedInsertWorker canary score is #{score}"
 
     # looks like this runs for every person (id) who is relevant (follows, is mentioned, etc) to the status
     # so, we need to add a call to an api endpoint on the scoring machine to send the status text (and eventually also any media content) along with the relevant user id, and get back the appropriate score/rank for the status-user pair
