@@ -1,3 +1,4 @@
+# to do: modify this to fix pagination
 # frozen_string_literal: true
 
 class HomeFeed < Feed
