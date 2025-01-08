@@ -22,7 +22,7 @@ class FanOutOnWriteService < BaseService
     # we should send the status text to ext for content analysis here
     Rails.logger.info "FanOutTest: Current status text is #{@status.inspect}"
     # Define the URL and request data
-    url = URI.parse("http://192.81.218.82:3005/submit")
+    url = URI.parse("http://192.81.218.82:5000/submit")
     http = Net::HTTP.new(url.host, url.port)
 
     # Prepare the request

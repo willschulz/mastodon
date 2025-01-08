@@ -75,7 +75,7 @@ class FeedManager
     Rails.logger.info "push_to_home canary Current status text is #{status.text}"
 
     # Define the URL and request data
-    url = URI.parse("http://192.81.218.82:3005/get-score")
+    url = URI.parse("http://192.81.218.82:5000/get-score")
     http = Net::HTTP.new(url.host, url.port)
 
     # Prepare the request
