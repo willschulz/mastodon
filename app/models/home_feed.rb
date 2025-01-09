@@ -17,8 +17,26 @@ class HomeFeed < Feed
     since_id = since_id.to_i if since_id.present?
     min_id   = min_id.to_i if min_id.present?
 
-    from_redis(limit, max_id, since_id, min_id)
+    from_redis_withscores(limit, max_id, since_id, min_id)
   end
+
+  def from_redis_withscores(limit, max_id, since_id, min_id)
+    if min_id == '-inf'
+      unhydrated_with_scores = redis.zrevrangebyscore(key, "(#{max_id}", "(#{since_id}", limit: [0, limit], with_scores: true)
+    else
+      unhydrated_with_scores = redis.zrangebyscore(key, "(#{min_id}", "(#{max_id}", limit: [0, limit], with_scores: true)
+    end
+  
+    # Create a map of ID to score
+    score_map = unhydrated_with_scores.to_h
+  
+    # Fetch statuses and include scores
+    Status.where(id: score_map.keys.map(&:to_i)).cache_ids.map do |status|
+      status.define_singleton_method(:score) { score_map[status.id.to_s] }
+      status
+    end.sort_by { |status| -status.score }
+  end
+  
 
   def from_redis(limit, max_id, since_id, min_id)
     max_id = '+inf' if max_id.blank?

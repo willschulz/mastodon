@@ -55,10 +55,10 @@ class Api::V1::Timelines::HomeController < Api::BaseController
   end
 
   def pagination_max_id
-    @statuses.last.id
+    @statuses.last.score
   end
 
   def pagination_since_id
-    @statuses.first.id
+    @statuses.first.score
   end
 end
