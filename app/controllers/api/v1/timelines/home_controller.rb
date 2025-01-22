@@ -19,14 +19,19 @@ class Api::V1::Timelines::HomeController < Api::BaseController
   private
 
   def load_statuses
+    Rails.logger.info "home_controller load_statuses"
     cached_home_statuses
   end
 
   def cached_home_statuses
+    Rails.logger.info "home_controller cached_home_statuses"
+
     cache_collection home_statuses, Status
   end
 
   def home_statuses
+    Rails.logger.info "home_controller home_statuses"
+
     account_home_feed.get(
       limit_param(DEFAULT_STATUSES_LIMIT),
       params[:max_id],
