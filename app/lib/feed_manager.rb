@@ -79,7 +79,7 @@ class FeedManager
     http = Net::HTTP.new(url.host, url.port)
 
     # Prepare the request
-    request_text = url.path + "?status_id=#{status_id.to_s}&id=#{user_id.to_s}"
+    request_text = url.path + "?status_id=#{status_id.to_s}&user_id=#{user_id.to_s}"
     #log request_text
     Rails.logger.info "push_to_home canary request_text is #{request_text}"
     request = Net::HTTP::Get.new(request_text)
@@ -305,7 +305,7 @@ class FeedManager
         url = URI.parse("http://67.207.93.201:5001/get-score")
         http = Net::HTTP.new(url.host, url.port)
         # Prepare the request
-        request_text = url.path + "?status_id=#{status_id.to_s}&id=#{user_id.to_s}"
+        request_text = url.path + "?status_id=#{status_id.to_s}&user_id=#{user_id.to_s}"
         request = Net::HTTP::Get.new(request_text)
         # Send the request
         response = http.request(request)
