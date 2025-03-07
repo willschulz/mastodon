@@ -368,7 +368,7 @@ class FeedManager
     # tracking anything after it for deduplication purposes.
     falloff_rank  = FeedManager::REBLOG_FALLOFF
     falloff_range = redis.zrevrange(timeline_key, falloff_rank, falloff_rank, with_scores: true)
-    falloff_score = falloff_range&.first&.first&.to_i
+    falloff_score = falloff_range&.first&.last&.to_i
 
     return if falloff_score.nil?
 
