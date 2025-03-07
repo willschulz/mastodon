@@ -67,19 +67,19 @@ class FeedManager
 
     #code to get score:
     status_id = status.id
-    id = account.id
+    user_id = account.id
 
     Rails.logger.info "feed_manager test log: push_to_home canary"
-    Rails.logger.info "push_to_home canary account.id: #{id}, status.id: #{status_id}"
+    Rails.logger.info "push_to_home canary account.id: #{user_id}, status.id: #{status_id}"
 
     Rails.logger.info "push_to_home canary Current status text is #{status.text}"
 
     # Define the URL and request data
-    url = URI.parse("http://67.207.93.201:5000/get-score")
+    url = URI.parse("http://67.207.93.201:5001/get-score")
     http = Net::HTTP.new(url.host, url.port)
 
     # Prepare the request
-    request_text = url.path + "?status_id=#{status_id.to_s}&id=#{id.to_s}"
+    request_text = url.path + "?status_id=#{status_id.to_s}&id=#{user_id.to_s}"
     #log request_text
     Rails.logger.info "push_to_home canary request_text is #{request_text}"
     request = Net::HTTP::Get.new(request_text)
@@ -300,12 +300,12 @@ class FeedManager
         # Define the URL and request data
         status_id = status.id
         Rails.logger.info "populate_home status_id: #{status_id}"
-        id = account.id
-        Rails.logger.info "populate_home user_id: #{id}"
-        url = URI.parse("http://67.207.93.201:5000/get-score")
+        user_id = account.id
+        Rails.logger.info "populate_home user_id: #{user_id}"
+        url = URI.parse("http://67.207.93.201:5001/get-score")
         http = Net::HTTP.new(url.host, url.port)
         # Prepare the request
-        request_text = url.path + "?status_id=#{status_id.to_s}&id=#{id.to_s}"
+        request_text = url.path + "?status_id=#{status_id.to_s}&id=#{user_id.to_s}"
         request = Net::HTTP::Get.new(request_text)
         # Send the request
         response = http.request(request)
