@@ -148,7 +148,7 @@ class FeedManager
     query        = from_account.statuses.where(visibility: [:public, :unlisted, :private]).includes(:preloadable_poll, :media_attachments, reblog: :account).limit(FeedManager::MAX_ITEMS / 4)
 
     if redis.zcard(timeline_key) >= FeedManager::MAX_ITEMS / 4
-      oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.first.to_i
+      oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
       query = query.where('id > ?', oldest_home_score)
     end
 
@@ -174,7 +174,7 @@ class FeedManager
     query        = from_account.statuses.where(visibility: [:public, :unlisted, :private]).includes(:preloadable_poll, :media_attachments, reblog: :account).limit(FeedManager::MAX_ITEMS / 4)
 
     if redis.zcard(timeline_key) >= FeedManager::MAX_ITEMS / 4
-      oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.first.to_i
+      oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
       query = query.where('id > ?', oldest_home_score)
     end
 
@@ -310,21 +310,6 @@ class FeedManager
     limit        = FeedManager::MAX_ITEMS / 2
     aggregate    = account.user&.aggregates_reblogs?
     timeline_key = key(:home, account.id)
-
-    account.statuses.limit(limit).each do |status|
-      add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
-    end
-
-    account.following.includes(:account_stat).find_each do |target_account|
-      if redis.zcard(timeline_key) >= limit
-        oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.first.to_i
-        last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
-
-        # If the feed is full and this account has not posted more recently
-        # than the last item on the feed, then we can skip the whole account
-        # because none of its statuses would stay on the feed anyway
-        next if last_status_score < oldest_home_score
-      end
 
     Rails.logger.info "Populating home feed for account #{account.id}"
 
