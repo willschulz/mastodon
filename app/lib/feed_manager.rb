@@ -266,43 +266,6 @@ class FeedManager
     end
   end
 
-  # # Populate home feed of account from scratch
-  # # @param [Account] account
-  # # @return [void]
-  # def populate_home(account)
-  #   limit        = FeedManager::MAX_ITEMS / 2
-  #   aggregate    = account.user&.aggregates_reblogs?
-  #   timeline_key = key(:home, account.id)
-
-  #   account.statuses.limit(limit).each do |status|
-  #     add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
-  #   end
-
-  #   account.following.includes(:account_stat).find_each do |target_account|
-  #     if redis.zcard(timeline_key) >= limit
-  #       oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
-  #       last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
-
-  #       # If the feed is full and this account has not posted more recently
-  #       # than the last item on the feed, then we can skip the whole account
-  #       # because none of its statuses would stay on the feed anyway
-  #       next if last_status_score < oldest_home_score
-  #     end
-
-  #     statuses = target_account.statuses.where(visibility: [:public, :unlisted, :private]).includes(:preloadable_poll, :media_attachments, :account, reblog: :account).limit(limit)
-  #     crutches = build_crutches(account.id, statuses)
-
-  #     statuses.each do |status|
-  #       next if filter_from_home?(status, account.id, crutches)
-
-  #       add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
-  #     end
-
-  #     trim(:home, account.id)
-  #   end
-  # end
-
-
   # Populate home feed of account from scratch
   # @param [Account] account
   # @return [void]
@@ -311,15 +274,72 @@ class FeedManager
     aggregate    = account.user&.aggregates_reblogs?
     timeline_key = key(:home, account.id)
 
-    Rails.logger.info "Populating home feed for account #{account.id}"
+    Rails.logger.info "populate_home test log: populate_home canary"
 
-    best_statuses = AlgoStatusScores.get_sentiment_rev_chron(limit)
-    Rails.logger.info "Best statuses: #{best_statuses}"
-    best_statuses.each do |status|
-      Rails.logger.info "Adding status #{status.id} to home feed"
-      add_to_feed_with_score(:home, account.id, status, status.negative_sentiment_rev_chron)
+    account.statuses.limit(limit).each do |status|
+      add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
+    end
+
+    account.following.includes(:account_stat).find_each do |target_account|
+      if redis.zcard(timeline_key) >= limit
+        oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
+        last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
+
+        # If the feed is full and this account has not posted more recently
+        # than the last item on the feed, then we can skip the whole account
+        # because none of its statuses would stay on the feed anyway
+        Rails.logger.info "populate_home oldest_home score: #{oldest_home_score}, last_status_score: #{last_status_score}"
+        next if last_status_score < oldest_home_score
+      end
+
+      statuses = target_account.statuses.where(visibility: [:public, :unlisted, :private]).includes(:preloadable_poll, :media_attachments, :account, reblog: :account).limit(limit)
+      crutches = build_crutches(account.id, statuses)
+
+      statuses.each do |status|
+        next if filter_from_home?(status, account.id, crutches)
+        # Define the URL and request data
+        status_id = status.id
+        Rails.logger.info "populate_home status_id: #{status_id}"
+        id = account.id
+        Rails.logger.info "populate_home user_id: #{id}"
+        url = URI.parse("http://192.81.218.82:5000/get-score")
+        http = Net::HTTP.new(url.host, url.port)
+        # Prepare the request
+        request_text = url.path + "?status_id=#{status_id.to_s}&id=#{id.to_s}"
+        request = Net::HTTP::Get.new(request_text)
+        # Send the request
+        response = http.request(request)
+        Rails.logger.info "populate_home response.body is #{response.body}"
+        # extract the score from the response
+        score = JSON.parse(response.body)["score"]
+
+        add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
+      end
+
+      trim(:home, account.id)
     end
   end
+
+
+
+
+  # # Populate home feed of account from scratch
+  # # @param [Account] account
+  # # @return [void]
+  # def populate_home(account)
+  #   limit        = FeedManager::MAX_ITEMS / 2
+  #   aggregate    = account.user&.aggregates_reblogs?
+  #   timeline_key = key(:home, account.id)
+
+  #   Rails.logger.info "Populating home feed for account #{account.id}"
+
+  #   best_statuses = AlgoStatusScores.get_sentiment_rev_chron(limit)
+  #   Rails.logger.info "Best statuses: #{best_statuses}"
+  #   best_statuses.each do |status|
+  #     Rails.logger.info "Adding status #{status.id} to home feed"
+  #     add_to_feed_with_score(:home, account.id, status, status.negative_sentiment_rev_chron)
+  #   end
+  # end
 
   # Completely clear multiple feeds at once
   # @param [Symbol] type
