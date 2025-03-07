@@ -8,6 +8,7 @@ class Api::V1::Timelines::HomeController < Api::BaseController
 
   def show
     @statuses = load_statuses
+    #could add a log here to see what is in @statuses when we try to get the next page of posts
 
     render json: @statuses,
            each_serializer: REST::StatusSerializer,
