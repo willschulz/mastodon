@@ -62,7 +62,7 @@ class FeedManager
   # @param [Status] status
   # @param [Boolean] update
   # @return [Boolean]
-  def push_to_home(account, status, update: false)
+  def push_to_home(account, status, update: false, score: nil)
     #return false unless add_to_feed(:home, account.id, status, aggregate_reblogs: account.user&.aggregates_reblogs?)
 
     #code to get score:
@@ -75,24 +75,26 @@ class FeedManager
     Rails.logger.info "push_to_home canary Current status text is #{status.text}"
 
     # Define the URL and request data
-    url = URI.parse("http://67.207.93.201:5001/get-score")
-    http = Net::HTTP.new(url.host, url.port)
+    if score.nil?
+      url = URI.parse("http://67.207.93.201:5001/get-score")
+      http = Net::HTTP.new(url.host, url.port)  
 
-    # Prepare the request
-    request_text = url.path + "?status_id=#{status_id.to_s}&user_id=#{user_id.to_s}"
-    #log request_text
-    Rails.logger.info "push_to_home canary request_text is #{request_text}"
-    request = Net::HTTP::Get.new(request_text)
+      # Prepare the request
+      request_text = url.path + "?status_id=#{status_id.to_s}&user_id=#{user_id.to_s}"
+      #log request_text
+      Rails.logger.info "push_to_home canary request_text is #{request_text}"
+      request = Net::HTTP::Get.new(request_text)
 
-    # Send the request
-    response = http.request(request)
+      # Send the request
+      response = http.request(request)
 
-    # Print the response
-    Rails.logger.info "push_to_home canary response.body is #{response.body}"
+      # Print the response
+      Rails.logger.info "push_to_home canary response.body is #{response.body}"
 
-    # extract the score from the response
-    score = JSON.parse(response.body)["score"]
-    puts "push_to_home canary score is #{score}"
+      # extract the score from the response
+      score = JSON.parse(response.body)["score"]
+      puts "push_to_home canary score is #{score}"
+    end
 
     return false unless add_to_feed_with_score(:home, account.id, status, score)
 
