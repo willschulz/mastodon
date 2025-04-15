@@ -32,7 +32,7 @@ class FanOutOnWriteService < BaseService
     request.body = { text: @status.text, id: @status.id.to_s, created_at: @status.created_at }.to_json
 
     # Send the request
-    response = http.request(request)
+    http.request(request)
 
     # then, feed_insert_worker goes and calculates the actual score for each status-user pair
     # this is where we should intervene
