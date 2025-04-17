@@ -22,7 +22,9 @@ class FanOutOnWriteService < BaseService
     # we should send the status text to ext for content analysis here
     Rails.logger.info "FanOutTest: Current status text is #{@status.inspect}"
     # Define the URL and request data
-    url = URI.parse("http://67.207.93.201:5001/submit")
+
+    url = URI.parse('http://67.207.93.201:5001/submit')
+
     http = Net::HTTP.new(url.host, url.port)
 
     # Prepare the request
@@ -30,15 +32,11 @@ class FanOutOnWriteService < BaseService
     request.body = { text: @status.text, id: @status.id.to_s, created_at: @status.created_at }.to_json
 
     # Send the request
-    response = http.request(request)
+    http.request(request)
 
-    # Print the response
-    puts response.body
-
-    
     # then, feed_insert_worker goes and calculates the actual score for each status-user pair
-
-    fan_out_to_local_recipients! #this is where we should intervene
+    # this is where we should intervene
+    fan_out_to_local_recipients!
     fan_out_to_public_recipients! if broadcastable?
     fan_out_to_public_streams! if broadcastable?
   end
@@ -58,12 +56,14 @@ class FanOutOnWriteService < BaseService
   end
 
   def fan_out_to_local_recipients!
-    deliver_to_self! 
-    notify_mentioned_accounts! #notification events that shouldn't happen until post is scored and in feeds
+    deliver_to_self!
+    # notification events that shouldn't happen until post is scored and in feeds
+    notify_mentioned_accounts!
     notify_about_update! if update?
 
     case @status.visibility.to_sym
-    when :public, :unlisted, :private #if we want a "FYP", we'd need a broader type of "delivery" (could be computationally costly, but maybe do async?)
+    # if we want a "FYP", we'd need a broader type of "delivery" (could be computationally costly, but maybe do async?)
+    when :public, :unlisted, :private
       deliver_to_all_followers!
       deliver_to_lists!
     when :limited
@@ -84,7 +84,8 @@ class FanOutOnWriteService < BaseService
   end
 
   def deliver_to_self!
-    FeedManager.instance.push_to_home(@account, @status, update: update?) if @account.local? #this probably determines own feed cache, can investigate later according to how we want ranking to work in author's feed
+    # this probably determines own feed cache, can investigate later according to how we want ranking to work in author's feed
+    FeedManager.instance.push_to_home(@account, @status, update: update?) if @account.local?
   end
 
   def notify_mentioned_accounts!
@@ -105,8 +106,35 @@ class FanOutOnWriteService < BaseService
 
   def deliver_to_all_followers!
     @account.followers_for_local_distribution.select(:id).reorder(nil).find_in_batches do |followers|
-      FeedInsertWorker.push_bulk(followers) do |follower| #can we add a score argument to push_bulk, or FeedInsertWorker to pass ddown cusotmized user scores
-        [@status.id, follower.id, 'home', { 'update' => update? }]
+      uri = URI.parse('http://67.207.93.201:5001/analysis/batched-get-score')
+      http = Net::HTTP.new(uri.host, uri.port)
+
+      request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
+      request.body = {
+        status_ids: [status.id.to_s],
+        user_ids: followers.map(&:id).map(&:to_s),
+      }.to_json
+
+      begin
+        response = http.request(request)
+        if response.code == '200'
+          scores = JSON.parse(response.body)['scores']
+          Rails.logger.info "Received batch scores: #{scores.inspect}"
+        else
+          Rails.logger.error "Failed to get scores. Status: #{response.code}, Body: #{response.body}"
+        end
+      rescue => e
+        Rails.logger.error "Error requesting scores: #{e.message}"
+      end
+      Rails.logger.info "Requesting scores for status_id=#{@status.id}, user_id=#{follower.id}"
+
+      response = Net::HTTP.get_response(uri)
+
+      Rails.logger.debug "Score API response: #{response.code} #{response.message}"
+
+      # can we add a score argument to push_bulk, or FeedInsertWorker to pass ddown cusotmized user scores
+      FeedInsertWorker.push_bulk(followers) do |follower|
+        [@status.id, follower.id, 'home', { 'update' => update?, 'score' => scores[status.id.to_s][follower.id.to_s] }]
       end
     end
   end
@@ -135,14 +163,16 @@ class FanOutOnWriteService < BaseService
     end
   end
 
-  def broadcast_to_hashtag_streams! #let's not worry about this for now
+  # let's not worry about this for now
+  def broadcast_to_hashtag_streams!
     @status.tags.map(&:name).each do |hashtag|
       redis.publish("timeline:hashtag:#{hashtag.mb_chars.downcase}", anonymous_payload)
       redis.publish("timeline:hashtag:#{hashtag.mb_chars.downcase}:local", anonymous_payload) if @status.local?
     end
   end
 
-  def broadcast_to_public_streams! #investigate relationship between this and the timeline-loading code we previously hacked for reranking
+  # investigate relationship between this and the timeline-loading code we previously hacked for reranking
+  def broadcast_to_public_streams!
     return if @status.reply? && @status.in_reply_to_account_id != @account.id
 
     redis.publish('timeline:public', anonymous_payload)
