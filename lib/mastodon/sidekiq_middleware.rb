@@ -6,7 +6,7 @@ class Mastodon::SidekiqMiddleware
   def call(_, job, queue)
     # comment this out if mailers workers should not be skipped (i.e. we are sending emails)
     if queue == 'mailers'
-      Sidekiq.logger.info("[skip_mailers] dropping #{ job['class'] } (jid=#{job['jid']})")
+      Sidekiq.logger.info("[skip_mailers] dropping #{job['class']} (jid=#{job['jid']})")
     else
       yield
     end
