@@ -101,6 +101,9 @@ gem 'json-ld'
 gem 'json-ld-preloaded', '~> 3.2'
 gem 'rdf-normalize', '~> 0.5'
 
+# for worker statistics
+gem 'sidekiq-statistic'
+
 group :development, :test do
   gem 'fabrication', '~> 2.30'
   gem 'fuubar', '~> 2.5'
@@ -153,7 +156,7 @@ group :production do
   gem 'lograge', '~> 0.12'
 end
 
-gem 'concurrent-ruby', require: false
+gem 'concurrent-ruby', '1.3.4', require: false
 gem 'connection_pool', require: false
 gem 'xorcist', '~> 1.1'
 gem 'cocoon', '~> 1.2'
