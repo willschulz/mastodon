@@ -3,7 +3,7 @@
 class Mastodon::SidekiqMiddleware
   BACKTRACE_LIMIT = 3
 
-  def call(worker, job, queue)
+  def call(_, job, queue)
     # comment this out if mailers workers should not be skipped (i.e. we are sending emails)
     if queue == 'mailers'
       Sidekiq.logger.info("[skip_mailers] dropping #{ job['class'] } (jid=#{job['jid']})")
