@@ -284,6 +284,7 @@ class FeedManager
 
     account.following.includes(:account_stat).find_each do |target_account|
       if redis.zcard(timeline_key) >= limit
+        # should be first value (id) of the first element (status) of the sorted set
         oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
         last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
 
@@ -297,25 +298,15 @@ class FeedManager
       statuses = target_account.statuses.where(visibility: [:public, :unlisted, :private]).includes(:preloadable_poll, :media_attachments, :account, reblog: :account).limit(limit)
       crutches = build_crutches(account.id, statuses)
 
-      statuses.each do |status|
-        next if filter_from_home?(status, account.id, crutches)
-        # Define the URL and request data
-        status_id = status.id
-        Rails.logger.info "populate_home status_id: #{status_id}"
-        user_id = account.id
-        Rails.logger.info "populate_home user_id: #{user_id}"
-        url = URI.parse("http://67.207.93.201:5001/get-score")
-        http = Net::HTTP.new(url.host, url.port)
-        # Prepare the request
-        request_text = url.path + "?status_id=#{status_id.to_s}&user_id=#{user_id.to_s}"
-        request = Net::HTTP::Get.new(request_text)
-        # Send the request
-        response = http.request(request)
-        Rails.logger.info "populate_home response.body is #{response.body}"
-        # extract the score from the response
-        score = JSON.parse(response.body)["score"]
-
-        add_to_feed(:home, account.id, status, aggregate_reblogs: aggregate)
+      Locutus::FetchScoresService.call(
+        status_ids: statuses.map(&:id),
+        user_ids: [account.id]
+      ).tap do |scores|
+        Rails.logger.info "Received batch scores: #{scores.inspect}"
+        statuses.each do |status|
+          score = scores[status.id] || 0
+          add_to_feed_with_score(:home, account.id, status, score)
+        end
       end
 
       trim(:home, account.id)
