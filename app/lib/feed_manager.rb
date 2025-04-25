@@ -283,17 +283,26 @@ class FeedManager
     end
 
     account.following.includes(:account_stat).find_each do |target_account|
-      if redis.zcard(timeline_key) >= limit
-        # should be first value (id) of the first element (status) of the sorted set
-        oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.last.to_i
-        last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
+      # This below optimization is actually invalid for us, as it relies on chronological order.
+      # Since we rank status based on their scores, we shouldn't use the hueristic that oldest status
+      # is the one that will be at the bottom of the feed and prune accordingly. We would somehow
+      # need to keep track of the highest score froms the target account's eligible statuses
+      # and compare it to the lowest scored status in the feed. This is not worth the complexity for now
+      # and we actually might want as many statuses as possible from the target account to make
+      # the feed more infinite, but it's a good idea to keep in mind for the future.
 
-        # If the feed is full and this account has not posted more recently
-        # than the last item on the feed, then we can skip the whole account
-        # because none of its statuses would stay on the feed anyway
-        Rails.logger.info "populate_home oldest_home score: #{oldest_home_score}, last_status_score: #{last_status_score}"
-        next if last_status_score < oldest_home_score
-      end
+
+      # if redis.zcard(timeline_key) >= limit
+      #   # should be first value (id) of the first element (status) of the sorted set
+      #   oldest_home_score = redis.zrange(timeline_key, 0, 0, with_scores: true).first.first.to_i
+      #   last_status_score = Mastodon::Snowflake.id_at(target_account.last_status_at)
+
+      #   # If the feed is full and this account has not posted more recently
+      #   # than the last item on the feed, then we can skip the whole account
+      #   # because none of its statuses would stay on the feed anyway
+      #   Rails.logger.info "populate_home oldest_home score or: #{oldest_home_score}, last_status_score: #{last_status_score}"
+      #   next if last_status_score < oldest_home_score
+      # end
 
       statuses = target_account.statuses.where(visibility: [:public, :unlisted, :private]).includes(:preloadable_poll, :media_attachments, :account, reblog: :account).limit(limit)
       crutches = build_crutches(account.id, statuses)

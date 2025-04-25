@@ -107,13 +107,13 @@ class FanOutOnWriteService < BaseService
   def deliver_to_all_followers!
     @account.followers_for_local_distribution.select(:id).reorder(nil).find_in_batches do |followers|
       Locutus::FetchScoresService.call(
-        status_ids: [status.id],
+        status_ids: [@status.id],
         user_ids: followers.map(&:id)
       ).tap do |scores|
         Rails.logger.info "Received batch scores: #{scores.inspect}"
         FeedInsertWorker.push_bulk(followers) do |follower|
-          [ status.id, follower.id, 'home',
-            { update: update?, score: scores.dig(status.id.to_s, follower.id.to_s) } ]
+          [ @status.id, follower.id, 'home',
+            { update: update?, score: scores.dig(@status.id.to_s, follower.id.to_s) } ]
         end
       end
     end
