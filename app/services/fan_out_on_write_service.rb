@@ -106,35 +106,15 @@ class FanOutOnWriteService < BaseService
 
   def deliver_to_all_followers!
     @account.followers_for_local_distribution.select(:id).reorder(nil).find_in_batches do |followers|
-      uri = URI.parse('http://67.207.93.201:5001/analysis/batched-get-score')
-      http = Net::HTTP.new(uri.host, uri.port)
-
-      request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
-      request.body = {
-        status_ids: [status.id.to_s],
-        user_ids: followers.map(&:id).map(&:to_s),
-      }.to_json
-
-      begin
-        response = http.request(request)
-        if response.code == '200'
-          scores = JSON.parse(response.body)['scores']
-          Rails.logger.info "Received batch scores: #{scores.inspect}"
-        else
-          Rails.logger.error "Failed to get scores. Status: #{response.code}, Body: #{response.body}"
+      Locutus::FetchScoresService.call(
+        status_ids: [@status.id],
+        user_ids: followers.map(&:id)
+      ).tap do |scores|
+        Rails.logger.info "Received batch scores: #{scores.inspect}"
+        FeedInsertWorker.push_bulk(followers) do |follower|
+          [ @status.id, follower.id, 'home',
+            { update: update?, score: scores.dig(@status.id.to_s, follower.id.to_s) } ]
         end
-      rescue => e
-        Rails.logger.error "Error requesting scores: #{e.message}"
-      end
-      Rails.logger.info "Requesting scores for status_id=#{@status.id}, user_id=#{follower.id}"
-
-      response = Net::HTTP.get_response(uri)
-
-      Rails.logger.debug "Score API response: #{response.code} #{response.message}"
-
-      # can we add a score argument to push_bulk, or FeedInsertWorker to pass ddown cusotmized user scores
-      FeedInsertWorker.push_bulk(followers) do |follower|
-        [@status.id, follower.id, 'home', { 'update' => update?, 'score' => scores[status.id.to_s][follower.id.to_s] }]
       end
     end
   end
