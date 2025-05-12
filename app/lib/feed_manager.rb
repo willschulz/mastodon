@@ -323,8 +323,6 @@ class FeedManager
   end
 
 
-
-
   # # Populate home feed of account from scratch
   # # @param [Account] account
   # # @return [void]
