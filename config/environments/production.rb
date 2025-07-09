@@ -44,7 +44,7 @@ Rails.application.configure do
   # Allow to specify public IP of reverse proxy if it's needed
   config.action_dispatch.trusted_proxies = ENV['TRUSTED_PROXY_IP'].split(/(?:\s*,\s*|\s+)/).map { |item| IPAddr.new(item) } if ENV['TRUSTED_PROXY_IP'].present?
 
-  config.force_ssl = true
+  config.force_ssl = ENV.fetch('FORCE_SSL', 'false').casecmp('true').zero?
   config.ssl_options = {
     redirect: {
       exclude: -> request { request.path.start_with?('/health') || request.headers["Host"].end_with?('.onion') || request.headers["Host"].end_with?('.i2p') }
