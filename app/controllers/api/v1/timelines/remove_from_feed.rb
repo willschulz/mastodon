@@ -1,9 +1,9 @@
 class Api::V1::Timelines::RemoveFromFeedController < Api::BaseController
     def create
-        remove_one_from_feed
+        remove_from_feed
     end
 
-    def remove_one_from_feed
+    def remove_from_feed
         account_id = params[:account_id]
         status_id = params[:status_id]
 
