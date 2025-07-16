@@ -3,6 +3,41 @@ class Api::V1::Timelines::AddToFeedController < Api::BaseController
         add_to_feed
     end
 
+    # POST /api/v1/timelines/add_to_feed/batch
+    # Expected params: { entries: [ { account_id: 1, status_id: 2, score: 10 }, ... ] }
+    def batch
+        entries = params[:entries]
+
+        if entries.nil? || !entries.is_a?(Array)
+            render json: { error: 'Entries must be an array' }, status: :bad_request and return
+        end
+
+        errors = []
+
+        entries.each do |item|
+            account_id = item[:account_id] || item['account_id']
+            status_id  = item[:status_id]  || item['status_id']
+            score      = item[:score]      || item['score']
+
+            account = Account.find_by(id: account_id)
+            status  = Status.find_by(id: status_id)
+
+            if account.nil? || status.nil?
+                errors << { account_id: account_id, status_id: status_id, error: 'Account or status not found' }
+                next
+            end
+
+            result = FeedManager.instance.push_to_home(account, status, score: score)
+            errors << { account_id: account_id, status_id: status_id, error: 'Failed to add' } unless result
+        end
+
+        if errors.empty?
+            render json: { message: 'Statuses added to feeds' }, status: :accepted
+        else
+            render json: { errors: errors }, status: :multi_status
+        end
+    end
+
     def add_to_feed
         account_id = params[:account_id]
         status_id = params[:status_id]

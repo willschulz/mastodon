@@ -3,6 +3,40 @@ class Api::V1::Timelines::RemoveFromFeedController < Api::BaseController
         remove_from_feed
     end
 
+    # POST /api/v1/timelines/remove_from_feed/batch
+    # Expected params: { entries: [ { account_id: 1, status_id: 2 }, ... ] }
+    def batch
+        entries = params[:entries]
+
+        if entries.nil? || !entries.is_a?(Array)
+            render json: { error: 'Entries must be an array' }, status: :bad_request and return
+        end
+
+        errors = []
+
+        entries.each do |item|
+            account_id = item[:account_id] || item['account_id']
+            status_id  = item[:status_id]  || item['status_id']
+
+            account = Account.find_by(id: account_id)
+            status  = Status.find_by(id: status_id)
+
+            if account.nil? || status.nil?
+                errors << { account_id: account_id, status_id: status_id, error: 'Account or status not found' }
+                next
+            end
+
+            result = FeedManager.instance.unpush_from_home(account, status)
+            errors << { account_id: account_id, status_id: status_id, error: 'Failed to remove' } unless result
+        end
+
+        if errors.empty?
+            render json: { message: 'Statuses removed from feeds' }, status: :accepted
+        else
+            render json: { errors: errors }, status: :multi_status
+        end
+    end
+
     def remove_from_feed
         account_id = params[:account_id]
         status_id = params[:status_id]
