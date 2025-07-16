@@ -196,8 +196,4 @@ module StatusesHelper
   def prefers_autoplay?
     ActiveModel::Type::Boolean.new.cast(params[:autoplay]) || current_user&.setting_auto_play_gif
   end
-
-  def log(id)
-    Rails.logger.info("DEBUG DEBUG DEBUG: #{id}")
-  end
 end
