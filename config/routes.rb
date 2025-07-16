@@ -474,9 +474,13 @@ Rails.application.routes.draw do
         resources :tag, only: :show
         resources :list, only: :show
         resource :regenerate, only: :create, controller: :regenerate
-        resource :add_to_feed, only: :create, controller: :add_to_feed
+        resource :add_to_feed, only: :create, controller: :add_to_feed do
+          post :batch, on: :collection
+        end
         resource :clean_feeds, only: :create, controller: :clean_feeds
-        resource :remove_from_feed, only: :create, controller: :remove_from_feed
+        resource :remove_from_feed, only: :create, controller: :remove_from_feed do
+          post :batch, on: :collection
+        end
       end
 
       resources :streaming, only: [:index]
