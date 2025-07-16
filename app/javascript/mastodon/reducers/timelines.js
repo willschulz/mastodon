@@ -30,6 +30,7 @@ const initialTimeline = ImmutableMap({
   hasMore: true,
   pendingItems: ImmutableList(),
   items: ImmutableList(),
+  scores: ImmutableMap(),
 });
 
 const expandNormalizedTimeline = (state, timeline, statuses, next, isPartial, isLoadingRecent, usePendingItems) => {
@@ -65,8 +66,10 @@ const expandNormalizedTimeline = (state, timeline, statuses, next, isPartial, is
 
       mMap.update(usePendingItems ? 'pendingItems' : 'items', ImmutableList(), oldIds => {
         const newIds = statuses.map(status => status.get('id'));
-        console.log('Old IDs:', oldIds.toJS());
-        console.log('New IDs:', newIds.toJS());
+        mMap.update('scores', ImmutableMap(), scores => {
+          const pairs = statuses.map(status => [status.get('id'), status.get('score')]).toJS();
+          return scores.merge(pairs);
+        });
 
         // Append newIds to the end of oldIds, ensuring no duplicates
         return oldIds.concat(newIds.filter(id => !oldIds.includes(id)));
@@ -75,7 +78,7 @@ const expandNormalizedTimeline = (state, timeline, statuses, next, isPartial, is
   }));
 };
 
-const updateTimeline = (state, timeline, status, usePendingItems) => {
+const updateTimeline = (state, timeline, status, usePendingItems, index = 0) => {
   const top = state.getIn([timeline, 'top']);
 
   if (usePendingItems || !state.getIn([timeline, 'pendingItems']).isEmpty()) {
@@ -83,7 +86,7 @@ const updateTimeline = (state, timeline, status, usePendingItems) => {
       return state;
     }
 
-    return state.update(timeline, initialTimeline, map => map.update('pendingItems', list => list.unshift(status.get('id'))).update('unread', unread => unread + 1));
+    return state.update(timeline, initialTimeline, map => map.update('pendingItems', list => list.unshift(status.get('id'))).update('unread', unread => unread + 1).update('scores', ImmutableMap(), scores => scores.set(status.get('id'), status.get('score'))));
   }
 
   const ids        = state.getIn([timeline, 'items'], ImmutableList());
@@ -99,7 +102,9 @@ const updateTimeline = (state, timeline, status, usePendingItems) => {
   return state.update(timeline, initialTimeline, map => map.withMutations(mMap => {
     if (!top) mMap.set('unread', unread + 1);
     if (top && ids.size > 40) newIds = newIds.take(20);
-    mMap.set('items', newIds.unshift(status.get('id')));
+    mMap.update('scores', ImmutableMap(), scores => scores.set(status.get('id'), status.get('score')));
+    newIds = newIds.insert(index, status.get('id'));
+    mMap.set('items', newIds);
   }));
 };
 
@@ -173,7 +178,7 @@ export default function timelines(state = initialState, action) {
   case TIMELINE_EXPAND_SUCCESS:
     return expandNormalizedTimeline(state, action.timeline, fromJS(action.statuses), action.next, action.partial, action.isLoadingRecent, action.usePendingItems);
   case TIMELINE_UPDATE:
-    return updateTimeline(state, action.timeline, fromJS(action.status), action.usePendingItems);
+    return updateTimeline(state, action.timeline, fromJS(action.status), action.usePendingItems, action.index);
   case TIMELINE_DELETE:
     return deleteStatus(state, action.id, action.references, action.reblogOf);
   case TIMELINE_CLEAR:
