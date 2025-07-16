@@ -41,8 +41,9 @@ class Api::V1::Timelines::HomeController < Api::BaseController
 
   def fetch_scores(statuses)
     feed = account_home_feed
+    key  = FeedManager.instance.key(:home, current_account.id)
     values = feed.redis.pipelined do |pipe|
-      statuses.each { |status| pipe.zscore(feed.key, status.id) }
+      statuses.each { |status| pipe.zscore(key, status.id) }
     end
     statuses.map.with_index { |status, i| [status.id, values[i].to_f] }.to_h
   end
