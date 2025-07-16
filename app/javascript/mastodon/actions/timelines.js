@@ -41,10 +41,24 @@ export function updateTimeline(timeline, status, accept) {
 
     dispatch(importFetchedStatus(status));
 
+    const state = getState();
+    const items = state.getIn(['timelines', timeline, 'items']);
+    const getScore = id => state.getIn(['statuses', id, 'score']);
+    const newScore = status.score || getScore(status.id);
+    let index = 0;
+    if (items) {
+      index = items.findIndex(item => {
+        const existingScore = getScore(item);
+        return existingScore === undefined || existingScore < newScore;
+      });
+      if (index === -1) index = items.size;
+    }
+
     dispatch({
       type: TIMELINE_UPDATE,
       timeline,
       status,
+      index,
       usePendingItems: preferPendingItems,
     });
 
