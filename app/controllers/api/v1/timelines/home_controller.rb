@@ -12,12 +12,15 @@ class Api::V1::Timelines::HomeController < Api::BaseController
     @statuses = load_statuses
     Rails.logger.info "home_feed.rb Loaded statuses: #{@statuses.map(&:id).inspect} #{@statuses}" unless @statuses.nil?
 
+    scores = fetch_scores(@statuses)
+
     Rails.logger.info "home_feed.rb Rendered statuses with status code: #{account_home_feed.regenerating? ? 206 : 200}"
-  
+
     render json: @statuses,
            each_serializer: REST::StatusSerializer,
            relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id),
-           status: account_home_feed.regenerating? ? 206 : 200
+           status: account_home_feed.regenerating? ? 206 : 200,
+           scores: scores
   end
 
   private
@@ -34,6 +37,15 @@ class Api::V1::Timelines::HomeController < Api::BaseController
 
     Rails.logger.info "home_feed.rb home_controller cached_home_statuses #{x}"
     x
+  end
+
+  def fetch_scores(statuses)
+    feed = account_home_feed
+    key  = FeedManager.instance.key(:home, current_account.id)
+    values = feed.redis.pipelined do |pipe|
+      statuses.each { |status| pipe.zscore(key, status.id) }
+    end
+    statuses.map.with_index { |status, i| [status.id, values[i].to_f] }.to_h
   end
 
   def home_statuses

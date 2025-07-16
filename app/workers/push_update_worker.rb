@@ -19,7 +19,12 @@ class PushUpdateWorker
   private
 
   def render_payload!
-    @payload = StatusCacheHydrator.new(@status).hydrate(@account_id)
+    score = @options[:score]
+    if score.nil?
+      key = FeedManager.instance.key(:home, @account_id)
+      score = FeedManager.instance.redis.zscore(key, @status.id)
+    end
+    @payload = StatusCacheHydrator.new(@status).hydrate(@account_id, score: score)
   end
 
   def message
