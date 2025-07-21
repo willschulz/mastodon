@@ -97,8 +97,8 @@ class FeedManager
     #   puts "push_to_home canary score is #{score}"
     # end
 
-    return false # no point in calling add_to_feed_with_score since score is always nil currently
-    # return false unless add_to_feed_with_score(:home, account.id, status, score)
+    #return false # no point in calling add_to_feed_with_score since score is always nil currently
+    return false unless add_to_feed_with_score(:home, account.id, status, score) #no, we actually do still need this here
 
     trim(:home, account.id)
     PushUpdateWorker.perform_async(account.id, status.id, "timeline:#{account.id}", { 'update' => update, 'score' => score }) if push_update_required?("timeline:#{account.id}")
