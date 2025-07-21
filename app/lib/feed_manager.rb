@@ -101,7 +101,7 @@ class FeedManager
     # return false unless add_to_feed_with_score(:home, account.id, status, score)
 
     trim(:home, account.id)
-    PushUpdateWorker.perform_async(account.id, status.id, "timeline:#{account.id}", { 'update' => update, 'score' => score }) if push_update_required?("timeline:#{account.id}")
+    PushUpdateWorker.perform_async(account.id, status.id, "timeline:#{account.id}", { 'update' => update }) if push_update_required?("timeline:#{account.id}")
     true
   end
 
