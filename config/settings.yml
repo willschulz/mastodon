@@ -9,12 +9,16 @@ defaults: &defaults
   site_terms: ''
   site_contact_username: ''
   site_contact_email: ''
-  registrations_mode: 'open'
+  # disable registrations to prevent logged-out users
+  # from creating accounts
+  registrations_mode: 'none'
   profile_directory: true
   closed_registrations_message: ''
   open_deletion: true
   min_invite_role: 'admin'
-  timeline_preview: true
+  # disable timeline preview to prevent logged-out users
+  # from seeing the content of public timelines
+  timeline_preview: false
   show_staff_badge: true
   default_sensitive: false
   unfollow_modal: false
@@ -65,8 +69,10 @@ defaults: &defaults
     - moderator
   disallowed_hashtags: # space separated string or list of hashtags without the hash
   bootstrap_timeline_accounts: ''
-  activity_api_enabled: true
-  peers_api_enabled: true
+  # disable activity and peers APIs to prevent logged-out users
+  # from seeing the content of public timelines
+  activity_api_enabled: false
+  peers_api_enabled: false
   show_domain_blocks: 'disabled'
   show_domain_blocks_rationale: 'disabled'
   require_invite_text: false
