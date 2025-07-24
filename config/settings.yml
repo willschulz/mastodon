@@ -14,7 +14,9 @@ defaults: &defaults
   closed_registrations_message: ''
   open_deletion: true
   min_invite_role: 'admin'
-  timeline_preview: true
+
+  # set to false to disable public feed visibility for non-signed in
+  timeline_preview: false
   show_staff_badge: true
   default_sensitive: false
   unfollow_modal: false
