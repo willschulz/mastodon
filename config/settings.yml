@@ -14,6 +14,8 @@ defaults: &defaults
   closed_registrations_message: ''
   open_deletion: true
   min_invite_role: 'admin'
+
+  # set to false if authentication required to view public feed
   timeline_preview: false
   show_staff_badge: true
   default_sensitive: false
