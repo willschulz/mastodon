@@ -1132,6 +1132,45 @@ body > [data-popper-placement] {
   }
 }
 
+.status__wrapper-reply {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0 10px;
+  background-color: lighten($ui-base-color, 5%);
+  border-top: 1px solid $ui-highlight-color;
+
+  .side-reply-icon-wrapper {
+    flex-shrink: 0;
+    position: relative;
+
+    .side-reply-icon{ 
+      position: absolute; 
+      top: 18px;
+      left: 3px;
+      transform: scale(1.5);
+      color: lighten($ui-highlight-color, 3%);
+      rotate: 180deg;
+    }
+  }
+
+  .status-reply {
+    flex: 1;
+
+    .status__info {
+      .status__display-name {
+        font-size: 13px;
+        line-height: 18px;
+
+        .status__avatar {
+          width: 36px;
+          height: 36px;
+        }
+      }
+    }
+  }
+}
+
 .status__relative-time {
   display: block;
   font-size: 15px;
