@@ -466,6 +466,10 @@ Rails.application.routes.draw do
         member do
           get :context
         end
+
+        collection do
+          post :seen
+        end
       end
 
       namespace :timelines do

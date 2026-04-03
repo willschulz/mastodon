@@ -4,6 +4,7 @@ import { setupBrowserNotifications } from 'mastodon/actions/notifications';
 import Mastodon, { store } from 'mastodon/containers/mastodon';
 import { me } from 'mastodon/initial_state';
 import ready from 'mastodon/ready';
+import { initializeVisibilityTracking } from 'mastodon/features/visibility_tracking';
 
 const perf = require('mastodon/performance');
 
@@ -19,6 +20,9 @@ function main() {
 
     ReactDOM.render(<Mastodon {...props} />, mountNode);
     store.dispatch(setupBrowserNotifications());
+
+    // Initialize visibility tracking
+    initializeVisibilityTracking();
 
     if (process.env.NODE_ENV === 'production' && me && 'serviceWorker' in navigator) {
       const { Workbox } = await import('workbox-window');
