@@ -489,8 +489,10 @@ class Status extends ImmutablePureComponent {
       );
     }
 
+    const isReply = status.get('in_reply_to_id') !== null; 
+    const avatarSize = isReply ? 36 : 46
     if (account === undefined || account === null) {
-      statusAvatar = <Avatar account={status.get('account')} size={46} />;
+      statusAvatar = <Avatar account={status.get('account')} size={avatarSize} />;
     } else {
       statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
     }
@@ -509,6 +511,7 @@ class Status extends ImmutablePureComponent {
         <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), unread, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
           {prepend}
 
+          {isReply && <div className="side-reply-icon-wrapper"><Icon id='reply' className='side-reply-icon' fixedWidth></Icon></div>} 
           <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted })} data-id={status.get('id')}>
             <div className='status__info'>
               <a onClick={this.handleClick} href={`/@${status.getIn(['account', 'acct'])}\/${status.get('id')}`} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
