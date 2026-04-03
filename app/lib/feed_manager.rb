@@ -77,7 +77,7 @@ class FeedManager
 
     # Define the URL and request data
     # if score.nil?
-    #   url = URI.parse("http://67.207.93.201:5001/get-score")
+    #   url = URI.parse("http://localhost:5001/get-score")
     #   http = Net::HTTP.new(url.host, url.port)  
 
     #   # Prepare the request
