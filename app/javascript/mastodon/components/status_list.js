@@ -77,7 +77,7 @@ export default class StatusList extends ImmutablePureComponent {
   };
 
   render () {
-    const { statusIds, featuredStatusIds, onLoadMore, timelineId, ...other }  = this.props;
+    const { statusIds, featuredStatusIds, onLoadMore, timelineId, threadParentIds, threadChildIds, ...other }  = this.props;
     const { isLoading, isPartial } = other;
 
     if (isPartial) {
@@ -102,6 +102,8 @@ export default class StatusList extends ImmutablePureComponent {
           scrollKey={this.props.scrollKey}
           showThread
           withCounters={this.props.withCounters}
+          isThreadParent={threadParentIds && threadParentIds.has(statusId)}
+          isThreadChild={threadChildIds && threadChildIds.has(statusId)}
         />
       ))
     ) : null;

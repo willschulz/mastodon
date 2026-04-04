@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import StatusList from '../../../components/status_list';
 import { scrollTopTimeline, loadPending } from '../../../actions/timelines';
-import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
+import { Map as ImmutableMap, List as ImmutableList, Set as ImmutableSet } from 'immutable';
 import { createSelector } from 'reselect';
 import { debounce } from 'lodash';
 import { me } from '../../../initial_state';
@@ -31,17 +31,47 @@ const makeGetStatusIds = (pending = false) => createSelector([
   });
 });
 
+const makeGetThreadRelationships = () => createSelector([
+  (state, { filteredIds }) => filteredIds,
+  (state) => state.get('statuses'),
+], (statusIds, statuses) => {
+  let threadParentIds = ImmutableSet();
+  let threadChildIds = ImmutableSet();
+
+  for (let i = 0; i < statusIds.size - 1; i++) {
+    const currentId = statusIds.get(i);
+    const nextId = statusIds.get(i + 1);
+    if (currentId === null || nextId === null) continue;
+
+    const nextStatus = statuses.get(nextId);
+    if (nextStatus && nextStatus.get('in_reply_to_id') === currentId) {
+      threadParentIds = threadParentIds.add(currentId);
+      threadChildIds = threadChildIds.add(nextId);
+    }
+  }
+
+  return { threadParentIds, threadChildIds };
+});
+
 const makeMapStateToProps = () => {
   const getStatusIds = makeGetStatusIds();
   const getPendingStatusIds = makeGetStatusIds(true);
+  const getThreadRelationships = makeGetThreadRelationships();
 
-  const mapStateToProps = (state, { timelineId }) => ({
-    statusIds: getStatusIds(state, { type: timelineId }),
-    isLoading: state.getIn(['timelines', timelineId, 'isLoading'], true),
-    isPartial: state.getIn(['timelines', timelineId, 'isPartial'], false),
-    hasMore:   state.getIn(['timelines', timelineId, 'hasMore']),
-    numPending: getPendingStatusIds(state, { type: timelineId }).size,
-  });
+  const mapStateToProps = (state, { timelineId }) => {
+    const statusIds = getStatusIds(state, { type: timelineId });
+    const { threadParentIds, threadChildIds } = getThreadRelationships(state, { filteredIds: statusIds });
+
+    return {
+      statusIds,
+      threadParentIds,
+      threadChildIds,
+      isLoading: state.getIn(['timelines', timelineId, 'isLoading'], true),
+      isPartial: state.getIn(['timelines', timelineId, 'isPartial'], false),
+      hasMore:   state.getIn(['timelines', timelineId, 'hasMore']),
+      numPending: getPendingStatusIds(state, { type: timelineId }).size,
+    };
+  };
 
   return mapStateToProps;
 };

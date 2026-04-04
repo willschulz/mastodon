@@ -90,6 +90,8 @@ class Status extends ImmutablePureComponent {
     muted: PropTypes.bool,
     hidden: PropTypes.bool,
     unread: PropTypes.bool,
+    isThreadParent: PropTypes.bool,
+    isThreadChild: PropTypes.bool,
     onMoveUp: PropTypes.func,
     onMoveDown: PropTypes.func,
     showThread: PropTypes.bool,
@@ -114,6 +116,8 @@ class Status extends ImmutablePureComponent {
     'hidden',
     'unread',
     'pictureInPicture',
+    'isThreadParent',
+    'isThreadChild',
   ];
 
   state = {
@@ -489,8 +493,10 @@ class Status extends ImmutablePureComponent {
       );
     }
 
-    const isReply = status.get('in_reply_to_id') !== null; 
-    const avatarSize = isReply ? 36 : 46
+    const isReply = status.get('in_reply_to_id') !== null;
+    const { isThreadParent, isThreadChild } = this.props;
+    const isThreaded = isThreadParent || isThreadChild;
+    const avatarSize = (isReply && !isThreadChild) ? 36 : 46;
     if (account === undefined || account === null) {
       statusAvatar = <Avatar account={status.get('account')} size={avatarSize} />;
     } else {
@@ -506,13 +512,68 @@ class Status extends ImmutablePureComponent {
 
     const visibilityIcon = visibilityIconInfo[status.get('visibility')];
 
+    const wrapperClasses = classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, {
+      'status__wrapper-reply': isReply && !isThreadChild,
+      'status__wrapper--thread-parent': isThreadParent,
+      'status__wrapper--thread-child': isThreadChild,
+      unread,
+      focusable: !this.props.muted,
+    });
+
+    if (isThreaded) {
+      return (
+        <HotKeys handlers={handlers}>
+          <div className={wrapperClasses} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
+            {prepend}
+
+            <div className={classNames('status status--threaded', `status-${status.get('visibility')}`, { muted: this.props.muted })} data-id={status.get('id')}>
+              <div className='status--threaded__avatar-column'>
+                {isThreadChild && <div className='status--threaded__line-up' />}
+                <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} className='status--threaded__avatar-link'>
+                  <div className='status__avatar'>
+                    {statusAvatar}
+                  </div>
+                </a>
+                {isThreadParent && <div className='status--threaded__line-down' />}
+              </div>
+              <div className='status--threaded__content-column'>
+                <div className='status__info'>
+                  <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
+                    <span className='display-name'><bdi><strong className='display-name__html'>@{status.getIn(['account', 'acct'])}</strong></bdi></span>
+                  </a>
+                  <a onClick={this.handleClick} href={`/@${status.getIn(['account', 'acct'])}\/${status.get('id')}`} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
+                    <span className='status__visibility-icon'><Icon id={visibilityIcon.icon} title={visibilityIcon.text} /></span>
+                    <RelativeTimestamp timestamp={status.get('created_at')} />{status.get('edited_at') && <abbr title={intl.formatMessage(messages.edited, { date: intl.formatDate(status.get('edited_at'), { hour12: false, year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) })}> *</abbr>}
+                  </a>
+                </div>
+
+                <StatusContent
+                  status={status}
+                  onClick={this.handleClick}
+                  expanded={!status.get('hidden')}
+                  onExpandedToggle={this.handleExpandedToggle}
+                  onTranslate={this.handleTranslate}
+                  collapsable
+                  onCollapsedToggle={this.handleCollapsedToggle}
+                />
+
+                {media}
+
+                <StatusActionBar scrollKey={scrollKey} status={status} account={account} onFilter={matchedFilters ? this.handleFilterClick : null} {...other} />
+              </div>
+            </div>
+          </div>
+        </HotKeys>
+      );
+    }
+
     return (
       <HotKeys handlers={handlers}>
-        <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), unread, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
+        <div className={wrapperClasses} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
           {prepend}
 
-          {isReply && <div className="side-reply-icon-wrapper"><Icon id='reply' className='side-reply-icon' fixedWidth></Icon></div>} 
-          <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted })} data-id={status.get('id')}>
+          {isReply && !isThreadChild && <div className="side-reply-icon-wrapper"><Icon id='reply' className='side-reply-icon' fixedWidth></Icon></div>}
+          <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': isReply && !isThreadChild, muted: this.props.muted })} data-id={status.get('id')}>
             <div className='status__info'>
               <a onClick={this.handleClick} href={`/@${status.getIn(['account', 'acct'])}\/${status.get('id')}`} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
                 <span className='status__visibility-icon'><Icon id={visibilityIcon.icon} title={visibilityIcon.text} /></span>
