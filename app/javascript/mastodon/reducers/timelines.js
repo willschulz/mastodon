@@ -83,6 +83,12 @@ const updateTimeline = (state, timeline, status, usePendingItems, index = 0) => 
 
   if (usePendingItems || !state.getIn([timeline, 'pendingItems']).isEmpty()) {
     if (state.getIn([timeline, 'pendingItems'], ImmutableList()).includes(status.get('id')) || state.getIn([timeline, 'items'], ImmutableList()).includes(status.get('id'))) {
+      const newScore = status.get('score');
+      if (newScore != null) {
+        return state.update(timeline, initialTimeline, map =>
+          map.update('scores', ImmutableMap(), scores => scores.set(status.get('id'), newScore))
+        );
+      }
       return state;
     }
 
@@ -94,6 +100,15 @@ const updateTimeline = (state, timeline, status, usePendingItems, index = 0) => 
   const unread     = state.getIn([timeline, 'unread'], 0);
 
   if (includesId) {
+    const currentScore = state.getIn([timeline, 'scores', status.get('id')]);
+    const newScore = status.get('score');
+    if (newScore != null && newScore !== currentScore) {
+      return state.update(timeline, initialTimeline, map => map.withMutations(mMap => {
+        mMap.update('scores', ImmutableMap(), scores => scores.set(status.get('id'), newScore));
+        const filtered = mMap.get('items').filter(id => id !== status.get('id'));
+        mMap.set('items', filtered.insert(index, status.get('id')));
+      }));
+    }
     return state;
   }
 

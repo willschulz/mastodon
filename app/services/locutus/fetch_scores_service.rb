@@ -3,7 +3,7 @@
 # app/services/locutus/fetch_scores_service.rb
 module Locutus
   class FetchScoresService < BaseService
-    SCORE_API_URI = URI('http://localhost:5001/analysis/batched-get-score')
+    SCORE_API_URI = URI("http://#{ENV.fetch('SCORING_API_HOST', '172.17.0.1')}:5001/analysis/batched-get-score")
 
     def self.call(status_ids:, user_ids:)
       new.call(status_ids: status_ids, user_ids: user_ids)

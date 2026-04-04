@@ -23,7 +23,7 @@ class FanOutOnWriteService < BaseService
     Rails.logger.info "FanOutTest: Current status text is #{@status.inspect}"
     # Define the URL and request data
 
-    url = URI.parse('http://localhost:5001/submit')
+    url = URI.parse("http://#{ENV.fetch('SCORING_API_HOST', '172.17.0.1')}:5001/submit")
 
     http = Net::HTTP.new(url.host, url.port)
 
